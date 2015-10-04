@@ -240,6 +240,40 @@ namespace yawlib
             //return list;
         }
 
+        /// <summary>
+        /// Exequtes a wmi query which get parsed by T.IWmiParsable.Parse
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <returns></returns>
+        public List<T> Query<T>(ObjectQuery query) where T : IWmiParseable
+        {
+            var t = default(T);
+
+            return Query<T>(query, (x) => 
+                { return (T)t.Parse(x); }
+            );
+        }
+
+        /// <summary>
+        /// Executes a WMI Query asynchronous which will get parsed on return by implemented IWmiParsable.Parse.
+        /// NOTE: works best for workgroup computers and interdomain machines due to security settings.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public async Task<List<T>> QueryAsync<T>(ObjectQuery query, CancellationToken cancellationToken = default(CancellationToken)) where T : IWmiParseable
+        {
+            var t = default(T);
+
+            return await QueryAsync<T>(query, (x) =>
+            {
+                return (T)t.Parse(x);
+            }, cancellationToken);
+
+        }
+
         #endregion
 
         #region Get All Functions
@@ -248,19 +282,20 @@ namespace yawlib
         //TODO: Maybe cache the result?
         private static SelectQuery CreateSelectAll(Type t)
         {
+            var wminame = string.Empty;
+
             var attribWmiClassName = t.GetCustomAttribute<WmiClassNameAttribute>();
 
             if (attribWmiClassName != null)
-            {
-                var wql = string.Format("SELECT * FROM {0}", attribWmiClassName.WmiClassName);
-
-                return new SelectQuery(wql);
-            }
+                wminame = attribWmiClassName.WmiClassName;
             else
-                throw new ArgumentException(string.Format(
-                    "Failed to retrive '{0}' attribute from type '{1}'", 
-                    nameof(WmiClassNameAttribute), t.FullName));
+                wminame = t.Name; // fall back to use .net class name
+
+            var wql = string.Format("SELECT * FROM {0}", wminame);
+
+            return new SelectQuery(wql);
         }
+
 
         /// <summary>
         /// Retrives all instances of specified wmiclass from wmi connection.
@@ -287,6 +322,35 @@ namespace yawlib
 
             return await QueryAsync<T>(query, Parse);
         }
+
+        /// <summary>
+        /// Retrives all instances of specified wmiclass from wmi connection.
+        /// Requires classes to implement IWmiParsable
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public List<T> Get<T>() where T : IWmiParseable
+        {
+            //TODO: use type system here instead.
+            var t = default(T);
+            return Get<T>((x) => { return (T)t.Parse(x); });
+
+            //var query = CreateSelectAll(typeof(T));           
+            //return Query<T>(query, });
+        }
+
+        /// <summary>
+        /// Retrives all instances of specified wmiclass from wmi connection.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public async Task<List<T>> GetAsync<T>() where T : IWmiParseable
+        {
+            //TODO: use type system here instead.
+            var t = default(T);
+            return await GetAsync<T>((x) => { return (T)t.Parse(x); });
+        }
+
 
         #endregion
     }
