@@ -1,11 +1,42 @@
-﻿using System;
+﻿#region License
+//
+// WmiConnection.cs
+// 
+// The MIT License (MIT)
+//
+// Copyright (c) 2015 Jarle Hansen
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE. 
+//
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Reflection;
+
 using System.Management;
 using System.Diagnostics;
+using System.Threading;
 
 namespace yawlib
 {
@@ -84,6 +115,9 @@ namespace yawlib
 
         #region Properties
 
+        /// <summary>
+        /// Are we connected?
+        /// </summary>
         public bool IsConnected
         {
             get
@@ -94,10 +128,11 @@ namespace yawlib
 
         #endregion
 
-        #region Functions
+        #region Various Functions
 
         /// <summary>
         /// Connects the scope with ctor spesified args.
+        /// This enables the user to modify the scope settings before connecting.
         /// TODO: why is this a separate function call instead of ctor internal?
         /// </summary>
         public void Connect()
@@ -106,6 +141,10 @@ namespace yawlib
             this.Scope.Connect();
         }
 
+        #endregion
+
+        #region Wmi Query
+
         /// <summary>
         /// Executes a WMI query which will get parsed by specified parser.
         /// </summary>
@@ -113,26 +152,26 @@ namespace yawlib
         /// <param name="query"></param>
         /// <param name="Parse"></param>
         /// <returns></returns>
-        public List<T> Execute<T>(ObjectQuery query, Func<ManagementBaseObject, T> Parse)
+        public List<T> Query<T>(ObjectQuery query, Func<ManagementBaseObject, T> Parse)
         {
             // Validate Parse is not empty.
             if (Parse == null)
                 throw new ArgumentNullException(nameof(Parse), "Parser delegate cant be null");
 
-            // Create a searcher using our scope.
-            var searcher = new ManagementObjectSearcher(this.Scope, query);
-
-            // execute synchronous query.
-            var data = searcher.Get();
-
             //list to hold our result.
             var list = new List<T>();
 
-            // enumerate managementbaseobjects.
-            foreach (var item in data)
+            using (var searcher = new ManagementObjectSearcher(this.Scope, query))
             {
-                // parse and add to list.
-                list.Add(Parse(item));
+                // query synchronous.
+                var data = searcher.Get();
+
+                // enumerate managementbaseobjects.
+                foreach (var item in data)
+                {
+                    // parse and add to list.
+                    list.Add(Parse(item));
+                }
             }
 
             //return parsed data.
@@ -147,14 +186,11 @@ namespace yawlib
         /// <param name="query"></param>
         /// <param name="Parse"></param>
         /// <returns></returns>
-        public async Task<List<T>> ExecuteAsync<T>(ObjectQuery query, Func<ManagementBaseObject, T> Parse)
+        public async Task<List<T>> QueryAsync<T>(ObjectQuery query, Func<ManagementBaseObject, T> Parse, CancellationToken cancellationToken = default(CancellationToken))
         {
             // Validate Parse is not empty.
             if (Parse == null)
                 throw new ArgumentNullException(nameof(Parse), "Parser delegate cant be null");
-
-            // Create a searcher using our scope.
-            var searcher = new ManagementObjectSearcher(this.Scope, query);
 
             // set up our async helper.
             var tsc = new TaskCompletionSource<List<T>>();
@@ -166,6 +202,10 @@ namespace yawlib
             //Add data input handler.
             watcher.ObjectReady += (sender, args) =>
             {
+                // basic cancellation support. Doesn't handle network timeouts (aka you have to wait...)
+                if (cancellationToken.IsCancellationRequested)
+                    tsc.TrySetCanceled(cancellationToken);
+                
                 // try to gracefully handle possible exceptions in parser code.
                 try
                 {
@@ -176,7 +216,7 @@ namespace yawlib
                 {
                     tsc.SetException(e);
                 }
-            };
+            };            
 
             //Add data completed handler.
             watcher.Completed += (obj, e) =>
@@ -185,10 +225,14 @@ namespace yawlib
                 tsc.TrySetResult(list);
             };
 
-            // start doing work async.
-            searcher.Get(watcher);
-
-            return await tsc.Task;
+            // Create a searcher using our scope.
+            using (var searcher = new ManagementObjectSearcher(this.Scope, query))
+            {
+                // start doing work async.
+                searcher.Get(watcher);
+                
+                return await tsc.Task;
+            }
 
             // await async task now so we can parse it.
             //await tsc.Task;
@@ -196,6 +240,53 @@ namespace yawlib
             //return list;
         }
 
+        #endregion
+
+        #region Get All Functions
+
+        //TODO: Move this function to reflection util class.
+        //TODO: Maybe cache the result?
+        private static SelectQuery CreateSelectAll(Type t)
+        {
+            var attribWmiClassName = t.GetCustomAttribute<WmiClassNameAttribute>();
+
+            if (attribWmiClassName != null)
+            {
+                var wql = string.Format("SELECT * FROM {0}", attribWmiClassName.WmiClassName);
+
+                return new SelectQuery(wql);
+            }
+            else
+                throw new ArgumentException(string.Format(
+                    "Failed to retrive '{0}' attribute from type '{1}'", 
+                    nameof(WmiClassNameAttribute), t.FullName));
+        }
+
+        /// <summary>
+        /// Retrives all instances of specified wmiclass from wmi connection.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="Parse"></param>
+        /// <returns></returns>
+        public List<T> Get<T>(Func<ManagementBaseObject, T> Parse)
+        {
+            var query = CreateSelectAll(typeof(T));
+
+            return Query<T>(query, Parse);
+        }
+
+        /// <summary>
+        /// Retrives all instances of specified wmiclass from wmi connection.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="Parse"></param>
+        /// <returns></returns>
+        public async Task<List<T>> GetAsync<T>(Func<ManagementBaseObject, T> Parse)
+        {
+            var query = CreateSelectAll(typeof(T));
+
+            return await QueryAsync<T>(query, Parse);
+        }
 
         #endregion
     }

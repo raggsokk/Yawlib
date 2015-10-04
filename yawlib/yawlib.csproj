@@ -36,6 +36,11 @@
     <Reference Include="System.Management" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Win32\BaseBoard.cs" />
+    <Compile Include="Win32\Bios.cs" />
+    <Compile Include="Win32\ComputerSystemProduct.cs" />
+    <Compile Include="Win32\PhysicalMedia.cs" />
+    <Compile Include="WmiClassNameAttribute.cs" />
     <Compile Include="WmiConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
