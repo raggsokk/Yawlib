@@ -37,7 +37,7 @@ using System.Management;
 namespace yawlib.Win32
 {
     [WmiClassName("Win32_BaseBoard")]
-    public class BaseBoard
+    public class BaseBoard : IWmiParseable
     {
         public string Caption { get; set; }
         public List<string> ConfigOptions { get; set; }
@@ -55,9 +55,7 @@ namespace yawlib.Win32
         public string Status { get; set; }
         public string Version { get; set; }
 
-        private static readonly string WqlSelect = "SELECT * from Win32_BaseBoard";
-
-        public static BaseBoard Parse(ManagementBaseObject mba)
+        IWmiParseable IWmiParseable.Parse(ManagementBaseObject mba)
         {
             var baseboard = new BaseBoard();
 
@@ -69,7 +67,7 @@ namespace yawlib.Win32
                         baseboard.Caption = p.Value as string;
                         break;
                     case "ConfigOptions":
-                        if(p.IsArray && p.Type == CimType.String)
+                        if (p.IsArray && p.Type == CimType.String)
                         {
                             baseboard.ConfigOptions = new List<string>();
                             var arr = p.Value as string[];
@@ -122,24 +120,89 @@ namespace yawlib.Win32
             return baseboard;
         }
 
-        public static List<BaseBoard> Retrive(WmiConnection connection)
-        {
-            var q = new SelectQuery(WqlSelect);
+        //public static BaseBoard Parse(ManagementBaseObject mba)
+        //{
+        //    var baseboard = new BaseBoard();
 
-            return connection.Query<BaseBoard>(q, (mbo) =>
-            {
-                return Parse(mbo);
-            });
-        }
+        //    foreach (var p in mba.Properties)
+        //    {
+        //        switch (p.Name)
+        //        {
+        //            case "Caption":
+        //                baseboard.Caption = p.Value as string;
+        //                break;
+        //            case "ConfigOptions":
+        //                if (p.IsArray && p.Type == CimType.String)
+        //                {
+        //                    baseboard.ConfigOptions = new List<string>();
+        //                    var arr = p.Value as string[];
+        //                    foreach (var c in arr)
+        //                        baseboard.ConfigOptions.Add(c);
+        //                }
+        //                break;
+        //            case "Description":
+        //                baseboard.Description = p.Value as string;
+        //                break;
+        //            case "HostingBoard":
+        //                baseboard.HostingBoard = (bool)p.Value;
+        //                break;
+        //            case "HotSwappable":
+        //                baseboard.HotSwappable = (bool)p.Value;
+        //                break;
+        //            case "Manufacturer":
+        //                baseboard.Manufacturer = p.Value as string;
+        //                break;
+        //            case "Name":
+        //                baseboard.Name = p.Value as string;
+        //                break;
+        //            case "PoweredOn":
+        //                baseboard.PoweredOn = (bool)p.Value;
+        //                break;
+        //            case "Removable":
+        //                baseboard.Removable = (bool)p.Value;
+        //                break;
+        //            case "Replaceable":
+        //                baseboard.Replaceable = (bool)p.Value;
+        //                break;
+        //            case "RequiresDaughterBoard":
+        //                baseboard.RequiresDaughterBoard = (bool)p.Value;
+        //                break;
+        //            case "SerialNumber":
+        //                baseboard.SerialNumber = p.Value as string;
+        //                break;
+        //            case "Status":
+        //                baseboard.Status = p.Value as string;
+        //                break;
+        //            case "Version":
+        //                baseboard.Version = p.Value as string;
+        //                break;
 
-        public static async Task<List<BaseBoard>> RetriveAsync(WmiConnection connection)
-        {
-            var q = new SelectQuery(WqlSelect);
+        //            default:
+        //                break;
+        //        }
+        //    }
 
-            return await connection.QueryAsync<BaseBoard>(q, (mbo) =>
-            {
-                return Parse(mbo);
-            });
-        }
+        //    return baseboard;
+        //}
+
+        //public static List<BaseBoard> Retrive(WmiConnection connection)
+        //{
+        //    var q = new SelectQuery(WqlSelect);
+
+        //    return connection.Query<BaseBoard>(q, (mbo) =>
+        //    {
+        //        return Parse(mbo);
+        //    });
+        //}
+
+        //public static async Task<List<BaseBoard>> RetriveAsync(WmiConnection connection)
+        //{
+        //    var q = new SelectQuery(WqlSelect);
+
+        //    return await connection.QueryAsync<BaseBoard>(q, (mbo) =>
+        //    {
+        //        return Parse(mbo);
+        //    });
+        //}
     }
 }

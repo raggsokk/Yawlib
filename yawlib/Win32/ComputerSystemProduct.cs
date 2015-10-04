@@ -37,7 +37,7 @@ using System.Management;
 namespace yawlib.Win32
 {
     [WmiClassName("Win32_ComputerSystemProduct")]
-    public class ComputerSystemProduct
+    public class ComputerSystemProduct : IWmiParseable
     {
         public string IdentifyingNumber { get; set; }
         public string Name { get; set; }
@@ -47,9 +47,7 @@ namespace yawlib.Win32
         public Guid UUID { get; set; }
         public string Vendor { get; set; }
 
-        private static readonly string WqlSelect = "SELECT IdentifyingNumber,Name,Version,Caption,Description,UUID,Vendor from Win32_ComputerSystemProduct";
-
-        public static ComputerSystemProduct Parse(ManagementBaseObject mba)
+        IWmiParseable IWmiParseable.Parse(ManagementBaseObject mba)
         {
             var csproduct = new ComputerSystemProduct();
 
@@ -57,25 +55,25 @@ namespace yawlib.Win32
             {
                 switch(p.Name)
                 {
-                    case "IdentifyingNumber":
+                    case nameof(IdentifyingNumber):
                         csproduct.IdentifyingNumber = p.Value as string;
                         break;
-                    case "Name":
+                    case nameof(Name):
                         csproduct.Name = p.Value as string;
                         break;
-                    case "Version":
-                        csproduct.Vendor = p.Value as string;
+                    case nameof(Version):
+                        csproduct.Version = p.Value as string;
                         break;
-                    case "Caption":
+                    case nameof(Caption):
                         csproduct.Caption = p.Value as string;
                         break;
-                    case "Description":
+                    case nameof(Description):
                         csproduct.Description = p.Value as string;
                         break;
-                    case "UUID":
+                    case nameof(UUID):
                         csproduct.UUID = Guid.Parse(p.Value as string);
                         break;
-                    case "Vendor":
+                    case nameof(Vendor):
                         csproduct.Vendor = p.Value as string;
                         break;
                     default:
@@ -85,25 +83,62 @@ namespace yawlib.Win32
 
             return csproduct;
         }
+        
+        //public static ComputerSystemProduct Parse(ManagementBaseObject mba)
+        //{
+        //    var csproduct = new ComputerSystemProduct();
 
-        public static List<ComputerSystemProduct> Retrive(WmiConnection connection)
-        {
-            var q = new SelectQuery(WqlSelect);
+        //    foreach(var p in mba.Properties)
+        //    {
+        //        switch(p.Name)
+        //        {
+        //            case "IdentifyingNumber":
+        //                csproduct.IdentifyingNumber = p.Value as string;
+        //                break;
+        //            case "Name":
+        //                csproduct.Name = p.Value as string;
+        //                break;
+        //            case "Version":
+        //                csproduct.Vendor = p.Value as string;
+        //                break;
+        //            case "Caption":
+        //                csproduct.Caption = p.Value as string;
+        //                break;
+        //            case "Description":
+        //                csproduct.Description = p.Value as string;
+        //                break;
+        //            case "UUID":
+        //                csproduct.UUID = Guid.Parse(p.Value as string);
+        //                break;
+        //            case "Vendor":
+        //                csproduct.Vendor = p.Value as string;
+        //                break;
+        //            default:
+        //                break;
+        //        }
+        //    }
 
-            return connection.Query<ComputerSystemProduct>(q, (mbo) =>
-            {
-                return Parse(mbo);
-            });
-        }
+        //    return csproduct;
+        //}
 
-        public static async Task<List<ComputerSystemProduct>> RetriveAsync(WmiConnection connection)
-        {
-            var q = new SelectQuery(WqlSelect);
+        //public static List<ComputerSystemProduct> Retrive(WmiConnection connection)
+        //{
+        //    var q = new SelectQuery(WqlSelect);
 
-            return await connection.QueryAsync<ComputerSystemProduct>(q, (mbo) =>
-            {
-                return Parse(mbo);
-            });
-        }
+        //    return connection.Query<ComputerSystemProduct>(q, (mbo) =>
+        //    {
+        //        return Parse(mbo);
+        //    });
+        //}
+
+        //public static async Task<List<ComputerSystemProduct>> RetriveAsync(WmiConnection connection)
+        //{
+        //    var q = new SelectQuery(WqlSelect);
+
+        //    return await connection.QueryAsync<ComputerSystemProduct>(q, (mbo) =>
+        //    {
+        //        return Parse(mbo);
+        //    });
+        //}
     }
 }

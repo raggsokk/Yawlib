@@ -37,52 +37,18 @@ using System.Management;
 namespace yawlib.Win32
 {
     [WmiClassName("Win32_PhysicalMedia")]
-    public class PhysicalMedia //: WmiObject<PhysicalMedia>
+    public class PhysicalMedia : IWmiParseable
     {
         public string Tag { get; set; }
         public string SerialNumber { get; set; }
-        
-        //public override PhysicalMedia Parse(ManagementBaseObject mba)
-        public virtual PhysicalMedia Parse(ManagementBaseObject mba)
+
+        IWmiParseable IWmiParseable.Parse(ManagementBaseObject mba)
         {
-            var physMedia = new PhysicalMedia();
-
-            foreach (var p in mba.Properties)
+            return new PhysicalMedia()
             {
-                switch (p.Name)
-                {
-                    case "Tag":
-                        physMedia.Tag = p.Value as string;
-                        break;
-                    case "SerialNumber":
-                        physMedia.SerialNumber = p.Value as string;
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            return physMedia;
+                Tag = mba.GetPropertyValue(nameof(Tag)) as string,
+                SerialNumber = mba.GetPropertyValue(nameof(SerialNumber)) as string,
+            };
         }
-
-        //public static List<Bios> Retrive(WmiConnection connection)
-        //{
-        //    var q = new SelectQuery(WqlSelect);
-
-        //    return connection.Execute<Bios>(q, (mbo) =>
-        //    {
-        //        return Parse(mbo);
-        //    });
-        //}
-
-        //public static async Task<List<Bios>> RetriveAsync(WmiConnection connection)
-        //{
-        //    var q = new SelectQuery(WqlSelect);
-
-        //    return await connection.ExecuteAsync<Bios>(q, (mbo) =>
-        //    {
-        //        return Parse(mbo);
-        //    });
-        //}
     }
 }

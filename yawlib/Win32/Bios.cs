@@ -37,7 +37,7 @@ using System.Management;
 namespace yawlib.Win32
 {
     [WmiClassName("Win32_BIOS")]
-    public class Bios
+    public class Bios : IWmiParseable
     {
         public string Name { get; set; }
         public string SoftwareElementID { get; set; }
@@ -65,9 +65,10 @@ namespace yawlib.Win32
         public byte SystemBiosMajorVersion { get; set; }
         public byte SystemBiosMinorVersion { get; set; }
 
-        private static readonly string WqlSelect = "SELECT * from Win32_BIOS";
+        //private static readonly string WqlSelect = "SELECT * from Win32_BIOS";
 
-        public static Bios Parse(ManagementBaseObject mba)
+        //public static Bios Parse(ManagementBaseObject mba)
+        IWmiParseable IWmiParseable.Parse(ManagementBaseObject mba)
         {
             var bios = new Bios();
 
@@ -131,24 +132,24 @@ namespace yawlib.Win32
             return bios;
         }
 
-        public static List<Bios> Retrive(WmiConnection connection)
-        {
-            var q = new SelectQuery(WqlSelect);
+        //public static List<Bios> Retrive(WmiConnection connection)
+        //{
+        //    var q = new SelectQuery(WqlSelect);
 
-            return connection.Query<Bios>(q, (mbo) =>
-            {
-                return Parse(mbo);
-            });
-        }
+        //    return connection.Query<Bios>(q, (mbo) =>
+        //    {
+        //        return Parse(mbo);
+        //    });
+        //}
 
-        public static async Task<List<Bios>> RetriveAsync(WmiConnection connection)
-        {
-            var q = new SelectQuery(WqlSelect);
+        //public static async Task<List<Bios>> RetriveAsync(WmiConnection connection)
+        //{
+        //    var q = new SelectQuery(WqlSelect);
 
-            return await connection.QueryAsync<Bios>(q, (mbo) =>
-            {
-                return Parse(mbo);
-            });
-        }
+        //    return await connection.QueryAsync<Bios>(q, (mbo) =>
+        //    {
+        //        return Parse(mbo);
+        //    });
+        //}
     }
 }
