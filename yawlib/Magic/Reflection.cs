@@ -15,8 +15,6 @@ namespace yawlib.Magic
     {
         internal delegate object CreateObject();
         internal delegate object GenericSetter(object target, object value);
-        //internal delegate object GenericParser(object target, object mbo);
-        internal delegate object GenericParser(IWmiParseable parsable, ManagementBaseObject mbo);
 
         #region Singleton
 
@@ -64,7 +62,7 @@ namespace yawlib.Magic
 
         #region Reflection (could be static actually.
 
-        internal CreateObject CompileCreateObject(Type objType)
+        internal static CreateObject CompileCreateObject(Type objType)
         {
             try
             {
@@ -101,7 +99,7 @@ namespace yawlib.Magic
             }
         }
 
-        internal GenericSetter CompileGenericSetMethod(Type type, PropertyInfo prop)
+        internal static GenericSetter CompileGenericSetMethod(Type type, PropertyInfo prop)
         {
             try
             {
@@ -166,84 +164,6 @@ namespace yawlib.Magic
                 throw new Exception(string.Format("Failed to compile generic setter method for property '{0}' on type '{1}' from assembly '{2}'.",
                     prop.Name, type.FullName, type.AssemblyQualifiedName), exc);
             }
-        }
-
-        internal GenericParser CompileGenericParse(Type objType)
-        {
-            try
-            {
-                MethodInfo parseMethod = null;
-
-                parseMethod = objType.GetMethod("Parse2", new Type[] { typeof(IWmiParseable), typeof(ManagementBaseObject) });
-
-                var parseMethods = objType.GetRuntimeMethods().Where(m =>
-                        m.Name.EndsWith("Parse2") &&
-                        m.ReturnType == typeof(IWmiParseable)
-                    );
-                    //.Where(m => m.Name == "Parse");
-
-                if (parseMethods.Count() == 1)
-                    parseMethod = parseMethods.First();
-                else
-                    throw new NotImplementedException("Choose best Parse Method");
-                //MethodInfo parseMethod = objType.GetMethod("Parse", BindingFlags.Instance);                            
-                //MethodInfo parseMethod = objType.GetRuntimeMethod("Parse");
-
-                if (parseMethod == null)
-                    return null;
-
-                //var test = Delegate.CreateDelegate(Func<ManagementBaseObject, object>, parseMethod);
-
-                Type[] arguments = new Type[] { typeof(IWmiParseable), typeof(ManagementBaseObject) };
-                //Type[] arguments = new Type[] { typeof(object), typeof(ManagementBaseObject) };
-                //Type[] arguments = new Type[] { typeof(object), typeof(object) };
-
-                DynamicMethod dynParser = new DynamicMethod("_", typeof(object), arguments);
-                ILGenerator ilGen = dynParser.GetILGenerator();
-
-                if(!objType.IsClass)
-                {
-                    throw new NotImplementedException();
-                }
-                else
-                {
-                    var lv = ilGen.DeclareLocal(typeof(object));
-                    var label = ilGen.DefineLabel();
-
-                    ilGen.Emit(OpCodes.Nop);
-                    ilGen.Emit(OpCodes.Ldarg_1);
-                    ilGen.Emit(OpCodes.Ldarg_2);
-                    ilGen.EmitCall(OpCodes.Callvirt, parseMethod, null);
-                    ilGen.Emit(OpCodes.Stloc_0);
-                    ilGen.Emit(OpCodes.Br_S, label);
-                    ilGen.MarkLabel(label);
-                    ilGen.Emit(OpCodes.Ldloc_0);
-                    //ilGen.Emit(OpCodes.Ret);
-                    //ilGen.Emit(OpCodes.Nop);
-                    //ilGen.Emit(OpCodes.Ldarg_1);
-                    //ilGen.Emit(OpCodes.Ldarg_2);
-                    //ilGen.EmitCall(OpCodes.Callvirt, parseMethod, null);
-                    //ilGen.Emit(OpCodes.Stloc_0);
-                    //ilGen.Emit(OpCodes.Br_S,)
-                    //ilGen.Emit(OpCodes.Ldarg_0);
-                    //ilGen.Emit(OpCodes.Castclass, parseMethod.DeclaringType);
-                    //ilGen.Emit(OpCodes.Ldarg_1);
-                    //ilGen.Emit(OpCodes.Castclass, typeof(ManagementBaseObject));
-                    //ilGen.EmitCall(OpCodes.Callvirt, parseMethod, null);
-                    //ilGen.Emit(OpCodes.Ldarg_0);
-                }
-
-                ilGen.Emit(OpCodes.Ret);
-
-                return (GenericParser)parseMethod.CreateDelegate(typeof(GenericParser));
-
-            }
-            catch(Exception exc)
-            {
-                throw exc;
-            }
-
-            throw new NotImplementedException();
         }
 
         #endregion

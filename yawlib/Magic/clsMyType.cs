@@ -38,9 +38,7 @@ namespace yawlib.Magic
         public SortedDictionary<string, clsMyPropery> WmiProperties = new SortedDictionary<string, clsMyPropery>();
 
         // Reflection
-        public Reflection.CreateObject CreateObject { get; set; } 
-        
-        public Reflection.GenericParser GenericParser { get; set; }       
+        public Reflection.CreateObject CreateObject { get; set; }                    
 
         internal clsMyType(Type t)
         {
@@ -56,9 +54,7 @@ namespace yawlib.Magic
                 this.WmiClassName = t.Name;
 
             // Compile createobject.
-            this.CreateObject = Reflection.Instance.CompileCreateObject(t);
-
-            this.GenericParser = Reflection.Instance.CompileGenericParse(t);
+            this.CreateObject = Reflection.CompileCreateObject(t);            
 
             var props = t.GetProperties(BindingFlags.Instance | BindingFlags.Public); // | BindingFlags.SetProperty
 

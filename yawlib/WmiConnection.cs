@@ -248,14 +248,16 @@ namespace yawlib
         /// <typeparam name="T"></typeparam>
         /// <param name="query"></param>
         /// <returns></returns>
-        public List<T> Query<T>(ObjectQuery query) where T : IWmiParseable, new()
+        public List<T> Query<T>(ObjectQuery query) where T : new()
         {
             //var t = default(T);
             var t = new T();
 
-            return Query<T>(query, (x) => 
-                { return (T)t.Parse(x); }
-            );
+            throw new NotImplementedException();
+
+            //return Query<T>(query, (x) => 
+            //    { return (T)t.Parse(x); }
+            //);
         }
 
         /// <summary>
@@ -270,10 +272,12 @@ namespace yawlib
         {
             var t = default(T);
 
-            return await QueryAsync<T>(query, (x) =>
-            {
-                return (T)t.Parse(x);
-            }, cancellationToken);
+            throw new NotImplementedException();
+
+            //return await QueryAsync<T>(query, (x) =>
+            //{
+            //    return (T)t.Parse(x);
+            //}, cancellationToken);
 
         }
 
@@ -326,21 +330,23 @@ namespace yawlib
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public List<T> Get<T>() where T : IWmiParseable, new()
+        public List<T> Get<T>() where T : new()
         {
-            var t = typeof(T);
-            var myType = Reflection.Instance.TryGetMyType(t.FullName, t);
+            throw new NotImplementedException();
 
-            var wql = myType.CreateSelectAll();
-            var query = new SelectQuery(wql);
+            //var t = typeof(T);
+            //var myType = Reflection.Instance.TryGetMyType(t.FullName, t);
 
-            var parser = myType.GenericParser;
-            var i = new T();
+            //var wql = myType.CreateSelectAll();
+            //var query = new SelectQuery(wql);
 
-            return Query<T>(query, (x) =>
-            {
-                return (T)parser(i, x);
-            });
+            //var parser = myType.GenericParser;
+            //var i = new T();
+
+            //return Query<T>(query, (x) =>
+            //{
+            //    return (T)parser(i, x);
+            //});
 
             //TODO: use type system here instead.
             //var t = default(T);
@@ -358,12 +364,13 @@ namespace yawlib
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public async Task<List<T>> GetAsync<T>() where T : IWmiParseable, new()
+        public async Task<List<T>> GetAsync<T>() where T : new()
         {
+            throw new NotImplementedException();
             //TODO: use type system here instead.
             //var t = default(T);
-            var t = new T();
-            return await GetAsync<T>((x) => { return (T)t.Parse(x); });
+            //var t = new T();
+            //return await GetAsync<T>((x) => { return (T)t.Parse(x); });
         }
 
 

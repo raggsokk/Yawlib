@@ -34,7 +34,7 @@ namespace yawlib.Magic
             //TODO: Implement Wmi Property mapper attribute;
             this.WmiName = p.Name;
 
-            this.GenericSetter = Reflection.Instance.CompileGenericSetMethod(p.DeclaringType, p);
+            this.GenericSetter = Reflection.CompileGenericSetMethod(p.DeclaringType, p);
         }
     }
 }

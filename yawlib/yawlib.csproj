@@ -36,7 +36,6 @@
     <Reference Include="System.Management" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IWmiParseable.cs" />
     <Compile Include="Magic\clsMyPropery.cs" />
     <Compile Include="Magic\clsMyType.cs" />
     <Compile Include="Magic\Reflection.cs" />
