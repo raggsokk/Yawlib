@@ -37,7 +37,7 @@ using System.Management;
 namespace yawlib.Win32
 {
     [WmiClassName("Win32_ComputerSystemProduct")]
-    public class ComputerSystemProduct : IWmiParseable
+    public class ComputerSystemProduct //: IWmiParseable
     {
         public string IdentifyingNumber { get; set; }
         public string Name { get; set; }
@@ -47,42 +47,42 @@ namespace yawlib.Win32
         public Guid UUID { get; set; }
         public string Vendor { get; set; }
 
-        IWmiParseable IWmiParseable.Parse(ManagementBaseObject mba)
-        {
-            var csproduct = new ComputerSystemProduct();
+        //IWmiParseable IWmiParseable.Parse(ManagementBaseObject mba)
+        //{
+        //    var csproduct = new ComputerSystemProduct();
 
-            foreach(var p in mba.Properties)
-            {
-                switch(p.Name)
-                {
-                    case nameof(IdentifyingNumber):
-                        csproduct.IdentifyingNumber = p.Value as string;
-                        break;
-                    case nameof(Name):
-                        csproduct.Name = p.Value as string;
-                        break;
-                    case nameof(Version):
-                        csproduct.Version = p.Value as string;
-                        break;
-                    case nameof(Caption):
-                        csproduct.Caption = p.Value as string;
-                        break;
-                    case nameof(Description):
-                        csproduct.Description = p.Value as string;
-                        break;
-                    case nameof(UUID):
-                        csproduct.UUID = Guid.Parse(p.Value as string);
-                        break;
-                    case nameof(Vendor):
-                        csproduct.Vendor = p.Value as string;
-                        break;
-                    default:
-                        break;
-                }
-            }
+        //    foreach(var p in mba.Properties)
+        //    {
+        //        switch(p.Name)
+        //        {
+        //            case nameof(IdentifyingNumber):
+        //                csproduct.IdentifyingNumber = p.Value as string;
+        //                break;
+        //            case nameof(Name):
+        //                csproduct.Name = p.Value as string;
+        //                break;
+        //            case nameof(Version):
+        //                csproduct.Version = p.Value as string;
+        //                break;
+        //            case nameof(Caption):
+        //                csproduct.Caption = p.Value as string;
+        //                break;
+        //            case nameof(Description):
+        //                csproduct.Description = p.Value as string;
+        //                break;
+        //            case nameof(UUID):
+        //                csproduct.UUID = Guid.Parse(p.Value as string);
+        //                break;
+        //            case nameof(Vendor):
+        //                csproduct.Vendor = p.Value as string;
+        //                break;
+        //            default:
+        //                break;
+        //        }
+        //    }
 
-            return csproduct;
-        }
+        //    return csproduct;
+        //}
         
         //public static ComputerSystemProduct Parse(ManagementBaseObject mba)
         //{

@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 namespace yawlib.Win32
 {
     [WmiClassName("Win32_DiskDrivePhysicalMedia")]
-    public class DiskDrivePhysicalMedia : IWmiParseable
+    public class DiskDrivePhysicalMedia //: IWmiParseable
     {
         public string Antecedent { get; set; }
         public string Dependent { get; set; }
 
-        IWmiParseable IWmiParseable.Parse(ManagementBaseObject mba)
-        {
-            return new DiskDrivePhysicalMedia()
-            {
-                Antecedent = mba.GetPropertyValue(nameof(Antecedent)) as string,
-                Dependent = mba.GetPropertyValue(nameof(Dependent)) as string,
-            };
-        }
+        //IWmiParseable IWmiParseable.Parse(ManagementBaseObject mba)
+        //{
+        //    return new DiskDrivePhysicalMedia()
+        //    {
+        //        Antecedent = mba.GetPropertyValue(nameof(Antecedent)) as string,
+        //        Dependent = mba.GetPropertyValue(nameof(Dependent)) as string,
+        //    };
+        //}
     }
 }

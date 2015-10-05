@@ -37,7 +37,7 @@ using System.Management;
 namespace yawlib.Win32
 {
     [WmiClassName("Win32_PhysicalMedia")]
-    public class PhysicalMedia : WmiParsable // : IWmiParseable
+    public class PhysicalMedia //: WmiParsable // : IWmiParseable
     {
         public string Tag { get; set; }
         public string SerialNumber { get; set; }

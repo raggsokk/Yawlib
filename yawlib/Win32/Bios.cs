@@ -37,7 +37,7 @@ using System.Management;
 namespace yawlib.Win32
 {
     [WmiClassName("Win32_BIOS")]
-    public class Bios : IWmiParseable
+    public class Bios //: IWmiParseable
     {
         public string Name { get; set; }
         public string SoftwareElementID { get; set; }
@@ -68,69 +68,69 @@ namespace yawlib.Win32
         //private static readonly string WqlSelect = "SELECT * from Win32_BIOS";
 
         //public static Bios Parse(ManagementBaseObject mba)
-        IWmiParseable IWmiParseable.Parse(ManagementBaseObject mba)
-        {
-            var bios = new Bios();
+        //IWmiParseable IWmiParseable.Parse(ManagementBaseObject mba)
+        //{
+        //    var bios = new Bios();
 
-            foreach (var p in mba.Properties)
-            {
-                switch (p.Name)
-                {
-                    case "Name":
-                        bios.Name = p.Value as string;
-                        break;
-                    case "Version":
-                        bios.Version = p.Value as string;
-                        break;
-                    case "Caption":
-                        bios.Caption = p.Value as string;
-                        break;
-                    case "CurrentLanguage":
-                        bios.CurrentLanguage = p.Value as string;
-                        break;
-                    case "Description":
-                        bios.Description = p.Value as string;
-                        break;
-                    case "Manufacturer":
-                        bios.Manufacturer = p.Value as string;
-                        break;
-                    case "PrimaryBIOS":
-                        bios.PrimaryBios = (bool)p.Value;
-                        break;
-                    case "ReleaseDate":
-                        bios.ReleaseDate = (DateTime)p.Value;
-                        break;
-                    case "SerialNumber":
-                        bios.SerialNumber = p.Value as string;
-                        break;
-                    case "SMBIOSBIOSVersion":
-                        bios.SMBIOSBIOSVersion = p.Value as string;
-                        break;
-                    case "SMBIOSMajorVersion":
-                        bios.SMBIOSMajorVersion = (int)p.Value;
-                        break;
-                    case "SMBIOSMinorVersion":
-                        bios.SMBIOSMinorVersion = (int)p.Value;
-                        break;
-                    case "SMBIOSPresent":
-                        bios.SMBIOSPresent = (bool)p.Value;
-                        break;
-                    case "Status":
-                        bios.Status = p.Value as string;
-                        break;
-                    case "SystemBiosMajorVersion":
-                        bios.SystemBiosMajorVersion = (byte)p.Value;
-                        break;
-                    case "SystemBiosMinorVersion":
-                        bios.SystemBiosMinorVersion = (byte)p.Value;
-                        break;
-                    default:
-                        break;
-                }
-            }
+        //    foreach (var p in mba.Properties)
+        //    {
+        //        switch (p.Name)
+        //        {
+        //            case "Name":
+        //                bios.Name = p.Value as string;
+        //                break;
+        //            case "Version":
+        //                bios.Version = p.Value as string;
+        //                break;
+        //            case "Caption":
+        //                bios.Caption = p.Value as string;
+        //                break;
+        //            case "CurrentLanguage":
+        //                bios.CurrentLanguage = p.Value as string;
+        //                break;
+        //            case "Description":
+        //                bios.Description = p.Value as string;
+        //                break;
+        //            case "Manufacturer":
+        //                bios.Manufacturer = p.Value as string;
+        //                break;
+        //            case "PrimaryBIOS":
+        //                bios.PrimaryBios = (bool)p.Value;
+        //                break;
+        //            case "ReleaseDate":
+        //                bios.ReleaseDate = (DateTime)p.Value;
+        //                break;
+        //            case "SerialNumber":
+        //                bios.SerialNumber = p.Value as string;
+        //                break;
+        //            case "SMBIOSBIOSVersion":
+        //                bios.SMBIOSBIOSVersion = p.Value as string;
+        //                break;
+        //            case "SMBIOSMajorVersion":
+        //                bios.SMBIOSMajorVersion = (int)p.Value;
+        //                break;
+        //            case "SMBIOSMinorVersion":
+        //                bios.SMBIOSMinorVersion = (int)p.Value;
+        //                break;
+        //            case "SMBIOSPresent":
+        //                bios.SMBIOSPresent = (bool)p.Value;
+        //                break;
+        //            case "Status":
+        //                bios.Status = p.Value as string;
+        //                break;
+        //            case "SystemBiosMajorVersion":
+        //                bios.SystemBiosMajorVersion = (byte)p.Value;
+        //                break;
+        //            case "SystemBiosMinorVersion":
+        //                bios.SystemBiosMinorVersion = (byte)p.Value;
+        //                break;
+        //            default:
+        //                break;
+        //        }
+        //    }
 
-            return bios;
-        }
+        //    return bios;
+        //}
 
         //public static List<Bios> Retrive(WmiConnection connection)
         //{
