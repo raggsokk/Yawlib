@@ -38,6 +38,8 @@ using System.Management;
 using System.Diagnostics;
 using System.Threading;
 
+using yawlib.Magic;
+
 namespace yawlib
 {
     /// <summary>
@@ -246,9 +248,10 @@ namespace yawlib
         /// <typeparam name="T"></typeparam>
         /// <param name="query"></param>
         /// <returns></returns>
-        public List<T> Query<T>(ObjectQuery query) where T : IWmiParseable
+        public List<T> Query<T>(ObjectQuery query) where T : IWmiParseable, new()
         {
-            var t = default(T);
+            //var t = default(T);
+            var t = new T();
 
             return Query<T>(query, (x) => 
                 { return (T)t.Parse(x); }
@@ -263,7 +266,7 @@ namespace yawlib
         /// <param name="query"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<List<T>> QueryAsync<T>(ObjectQuery query, CancellationToken cancellationToken = default(CancellationToken)) where T : IWmiParseable
+        public async Task<List<T>> QueryAsync<T>(ObjectQuery query, CancellationToken cancellationToken = default(CancellationToken)) where T : IWmiParseable, new()
         {
             var t = default(T);
 
@@ -282,20 +285,14 @@ namespace yawlib
         //TODO: Maybe cache the result?
         private static SelectQuery CreateSelectAll(Type t)
         {
-            var wminame = string.Empty;
+            Magic.clsMyType myType = null;
 
-            var attribWmiClassName = t.GetCustomAttribute<WmiClassNameAttribute>();
+            myType = Magic.Reflection.Instance.TryGetMyType(t.FullName, t);
 
-            if (attribWmiClassName != null)
-                wminame = attribWmiClassName.WmiClassName;
-            else
-                wminame = t.Name; // fall back to use .net class name
-
-            var wql = string.Format("SELECT * FROM {0}", wminame);
+            var wql = string.Format("SELECT * FROM {0}", myType.WmiClassName);
 
             return new SelectQuery(wql);
         }
-
 
         /// <summary>
         /// Retrives all instances of specified wmiclass from wmi connection.
@@ -329,11 +326,28 @@ namespace yawlib
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public List<T> Get<T>() where T : IWmiParseable
+        public List<T> Get<T>() where T : IWmiParseable, new()
         {
+            var t = typeof(T);
+            var myType = Reflection.Instance.TryGetMyType(t.FullName, t);
+
+            var wql = myType.CreateSelectAll();
+            var query = new SelectQuery(wql);
+
+            var parser = myType.GenericParser;
+            var i = new T();
+
+            return Query<T>(query, (x) =>
+            {
+                return (T)parser(i, x);
+            });
+
             //TODO: use type system here instead.
-            var t = default(T);
-            return Get<T>((x) => { return (T)t.Parse(x); });
+            //var t = default(T);
+            //return Get<T>((x) => { return (T)t.Parse(x); });
+            //var query = CreateSelectAll(typeof(T));
+
+            //return Query<T>(query);
 
             //var query = CreateSelectAll(typeof(T));           
             //return Query<T>(query, });
@@ -344,10 +358,11 @@ namespace yawlib
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public async Task<List<T>> GetAsync<T>() where T : IWmiParseable
+        public async Task<List<T>> GetAsync<T>() where T : IWmiParseable, new()
         {
             //TODO: use type system here instead.
-            var t = default(T);
+            //var t = default(T);
+            var t = new T();
             return await GetAsync<T>((x) => { return (T)t.Parse(x); });
         }
 

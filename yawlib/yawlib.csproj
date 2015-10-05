@@ -37,6 +37,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IWmiParseable.cs" />
+    <Compile Include="Magic\clsMyPropery.cs" />
+    <Compile Include="Magic\clsMyType.cs" />
+    <Compile Include="Magic\Reflection.cs" />
     <Compile Include="Win32\BaseBoard.cs" />
     <Compile Include="Win32\Bios.cs" />
     <Compile Include="Win32\ComputerSystemProduct.cs" />
@@ -48,6 +51,7 @@
     <Compile Include="WmiClassNameAttribute.cs" />
     <Compile Include="WmiConnection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WmiParsable.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
