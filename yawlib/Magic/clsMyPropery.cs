@@ -12,6 +12,7 @@ using System.Diagnostics;
 
 namespace yawlib.Magic
 {
+    [DebuggerDisplay("{WmiName}")]
     internal class clsMyPropery
     {
         /// <summary>

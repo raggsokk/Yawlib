@@ -148,7 +148,101 @@ namespace yawlib
         #region Wmi Query
 
         /// <summary>
+        /// Executes a wmi query and converts it using reflection magic from myType.
+        /// Dont like the fragmentation of this code.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="myType"></param>
+        /// <returns></returns>
+        internal List<T> Execute<T>(ObjectQuery query, clsMyType myType)
+        {
+            //list to hold our result.
+            var result = new List<T>();
+
+            using (var searcher = new ManagementObjectSearcher(this.Scope, query))
+            {
+                // query synchronous.
+                var data = searcher.Get();
+
+                // convert this to something we can work on.
+                var tmplist = new List<ManagementBaseObject>();
+                foreach (var i in data)
+                    tmplist.Add(i);
+
+                var success = myType.Convert(tmplist, result);
+            }
+
+            //return parsed data.
+            return result;
+        }
+
+        /// <summary>
+        /// Executes a wmi query async and converts it using reflection magic from myType.
+        /// Dont like the fragmentation of this code.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="query"></param>
+        /// <param name="myType"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        internal async Task<List<T>> ExecuteAsync<T>(ObjectQuery query, clsMyType myType, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            // set up our async helper.
+            var tsc = new TaskCompletionSource<List<T>>();            
+
+            // create watcher control
+            var watcher = new ManagementOperationObserver();
+
+            var list = new List<ManagementBaseObject>();
+
+            //Add data input handler.
+            watcher.ObjectReady += (sender, args) =>
+            {
+                // basic cancellation support. Doesn't handle network timeouts (aka you have to wait...)
+                if (cancellationToken.IsCancellationRequested)
+                    tsc.TrySetCanceled(cancellationToken);
+
+                // try to gracefully handle possible exceptions in parser code.
+                try
+                {                    
+                    list.Add(args.NewObject);
+                }
+                catch (Exception e)
+                {
+                    tsc.SetException(e);
+                }
+            };
+
+            //Add data completed handler.
+            watcher.Completed += (obj, e) =>
+            {
+                var result = new List<T>();
+
+                //if (e.Status == ManagementStatus.NoError)
+                {
+                    if (myType.Convert(list, result))
+                        tsc.TrySetResult(result);
+                }                
+
+                //TODO: handle e.Status??
+
+            };
+
+            // Create a searcher using our scope.
+            using (var searcher = new ManagementObjectSearcher(this.Scope, query))
+            {
+                // start doing work async.
+                searcher.Get(watcher);
+
+                return await tsc.Task;
+            }
+        }
+
+
+        /// <summary>
         /// Executes a WMI query which will get parsed by specified parser.
+        /// Dont like the fragmentation of this code.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="query"></param>
@@ -218,7 +312,7 @@ namespace yawlib
                 {
                     tsc.SetException(e);
                 }
-            };            
+            };
 
             //Add data completed handler.
             watcher.Completed += (obj, e) =>
@@ -250,10 +344,15 @@ namespace yawlib
         /// <returns></returns>
         public List<T> Query<T>(ObjectQuery query) where T : new()
         {
-            //var t = default(T);
-            var t = new T();
+            var t = typeof(T);
+            var myType = Reflection.Instance.TryGetMyType(t.FullName, t);
 
-            throw new NotImplementedException();
+            return Execute<T>(query, myType);
+
+            ////var t = default(T);
+            //var t = new T();
+
+            //throw new NotImplementedException();
 
             //return Query<T>(query, (x) => 
             //    { return (T)t.Parse(x); }
@@ -270,9 +369,12 @@ namespace yawlib
         /// <returns></returns>
         public async Task<List<T>> QueryAsync<T>(ObjectQuery query, CancellationToken cancellationToken = default(CancellationToken)) where T : new()
         {
-            var t = default(T);
+            var t = typeof(T);
+            var myType = Reflection.Instance.TryGetMyType(t.FullName, t);
 
-            throw new NotImplementedException();
+            return await ExecuteAsync<T>(query, myType, cancellationToken);
+
+            //throw new NotImplementedException();
 
             //return await QueryAsync<T>(query, (x) =>
             //{
@@ -287,16 +389,16 @@ namespace yawlib
 
         //TODO: Move this function to reflection util class.
         //TODO: Maybe cache the result?
-        private static SelectQuery CreateSelectAll(Type t)
-        {
-            Magic.clsMyType myType = null;
+        //private static SelectQuery CreateSelectAll(Type t)
+        //{
+        //    Magic.clsMyType myType = null;
 
-            myType = Magic.Reflection.Instance.TryGetMyType(t.FullName, t);
+        //    myType = Magic.Reflection.Instance.TryGetMyType(t.FullName, t);
 
-            var wql = string.Format("SELECT * FROM {0}", myType.WmiClassName);
+        //    var wql = string.Format("SELECT * FROM {0}", myType.WmiClassName);
 
-            return new SelectQuery(wql);
-        }
+        //    return new SelectQuery(wql);
+        //}
 
         /// <summary>
         /// Retrives all instances of specified wmiclass from wmi connection.
@@ -306,9 +408,18 @@ namespace yawlib
         /// <returns></returns>
         public List<T> Get<T>(Func<ManagementBaseObject, T> Parse)
         {
-            var query = CreateSelectAll(typeof(T));
+            var t = typeof(T);
+            var myType = Reflection.Instance.TryGetMyType(t.FullName, t);
+
+            var query = new SelectQuery(myType.CreateSelectAll());
 
             return Query<T>(query, Parse);
+
+            //return Execute<T>(query, myType);
+
+            //var query = CreateSelectAll(typeof(T));
+
+            //return Query<T>(query, Parse);
         }
 
         /// <summary>
@@ -317,11 +428,20 @@ namespace yawlib
         /// <typeparam name="T"></typeparam>
         /// <param name="Parse"></param>
         /// <returns></returns>
-        public async Task<List<T>> GetAsync<T>(Func<ManagementBaseObject, T> Parse)
+        public async Task<List<T>> GetAsync<T>(Func<ManagementBaseObject, T> Parse, CancellationToken cancellationToken = default(CancellationToken))
         {
-            var query = CreateSelectAll(typeof(T));
+            var t = typeof(T);
+            var myType = Reflection.Instance.TryGetMyType(t.FullName, t);
 
-            return await QueryAsync<T>(query, Parse);
+            var query = new SelectQuery(myType.CreateSelectAll());
+
+            return await QueryAsync<T>(query, Parse, cancellationToken);
+
+            //return await ExecuteAsync<T>(query, myType, cancellationToken)
+
+            //var query = CreateSelectAll(typeof(T));
+
+
         }
 
         /// <summary>
@@ -332,7 +452,14 @@ namespace yawlib
         /// <returns></returns>
         public List<T> Get<T>() where T : new()
         {
-            throw new NotImplementedException();
+            var t = typeof(T);
+            var myType = Reflection.Instance.TryGetMyType(t.FullName, t);
+
+            var query = new SelectQuery(myType.CreateSelectAll());
+
+            return Execute<T>(query, myType);
+
+            //throw new NotImplementedException();
 
             //var t = typeof(T);
             //var myType = Reflection.Instance.TryGetMyType(t.FullName, t);
@@ -364,9 +491,16 @@ namespace yawlib
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public async Task<List<T>> GetAsync<T>() where T : new()
+        public async Task<List<T>> GetAsync<T>(CancellationToken cancellationToken = default(CancellationToken)) where T : new()
         {
-            throw new NotImplementedException();
+            var t = typeof(T);
+            var myType = Reflection.Instance.TryGetMyType(t.FullName, t);
+
+            var query = new SelectQuery(myType.CreateSelectAll());
+
+            return await ExecuteAsync<T>(query, myType, cancellationToken);
+
+            //throw new NotImplementedException();
             //TODO: use type system here instead.
             //var t = default(T);
             //var t = new T();

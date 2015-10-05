@@ -9,12 +9,11 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Diagnostics;
 
-
 namespace yawlib.Magic
 {
+    [DebuggerDisplay("{WmiClassName}")]
     internal class clsMyType
     {
-
         /// <summary>
         /// .net name of type.
         /// </summary>
@@ -45,6 +44,7 @@ namespace yawlib.Magic
             // create mytype.
 
             this.TypeName = t.Name;
+            this.FullName = t.FullName;
 
             // set wmi class name to use.
             var attribWmiClassName = t.GetCustomAttribute<WmiClassNameAttribute>();
@@ -71,6 +71,125 @@ namespace yawlib.Magic
             return string.Format("SELECT * FROM {0}",
                 WmiClassName);
         }
+
+        internal bool Convert(List<ManagementBaseObject> data, System.Collections.IList result)
+        {
+            if (data == null)
+                throw new ArgumentNullException(string.Format("Argument cant be null. Arg='{0}', Type='{1}'", nameof(data), typeof(ManagementObjectCollection).Name));
+
+            if (data.Count == 0)
+                return true;
+
+            foreach (var item in data)
+            {
+                var instance = this.CreateObject();
+
+                foreach (var p in item.Properties)
+                {
+                    if (!p.IsLocal)
+                        continue; // if prop not defined on this instance, skip searching for it.
+
+                    clsMyPropery myprop = null;
+
+                    if (WmiProperties.TryGetValue(p.Name, out myprop))
+                    {
+                        object oset = null;
+
+                        // convert.
+                        switch (p.Type)
+                        {
+                            case CimType.String:
+                                //TODO: handle when string is actually GUID, UUID, IPAddress, etc.
+                                oset = p.Value; // no conversion.                                
+                                break;
+                            case CimType.UInt8:
+                                oset = (byte)p.Value;
+                                break;
+                            case CimType.UInt16:
+                                oset = (UInt16)p.Value;
+                                break;
+                            case CimType.UInt32:
+                                oset = (UInt32)p.Value;
+                                break;
+                            case CimType.UInt64:
+                                oset = (UInt64)p.Value;
+                                break;
+                            case CimType.Boolean:
+                                oset = (bool)p.Value;
+                                break;
+                            case CimType.DateTime:
+                                oset = (DateTime)p.Value;
+                                break;
+                            default:
+                                break;
+                        }
+
+                        instance = myprop.GenericSetter(instance, oset);
+                    }
+                }
+
+                result.Add(instance);
+            }
+
+            return true;
+        }
+
+        //internal bool Convert(ManagementObjectCollection data, System.Collections.IList result)
+        //{
+        //    if (data == null)
+        //        throw new ArgumentNullException(string.Format("Argument cant be null. Arg='{0}', Type='{1}'", nameof(data), typeof(ManagementObjectCollection).Name));
+
+
+        //    foreach(var item in data)
+        //    {
+        //        var instance = this.CreateObject();                
+
+        //        foreach (var p in item.Properties)
+        //        {
+        //            clsMyPropery myprop = null;
+
+        //            if(WmiProperties.TryGetValue(p.Name, out myprop))
+        //            {
+        //                object oset = null;
+
+        //                // convert.
+        //                switch(p.Type)
+        //                {
+        //                    case CimType.String:
+        //                        //TODO: handle when string is actually GUID, UUID, IPAddress, etc.
+        //                        oset = p.Value; // no conversion.                                
+        //                        break;
+        //                    case CimType.UInt8:
+        //                        oset = (byte)p.Value;
+        //                        break;
+        //                    case CimType.UInt16:
+        //                        oset = (UInt16)p.Value;
+        //                        break;
+        //                    case CimType.UInt32:
+        //                        oset = (UInt32)p.Value;
+        //                        break;
+        //                    case CimType.UInt64:
+        //                        oset = (UInt64)p.Value;
+        //                        break;
+        //                    case CimType.Boolean:
+        //                        oset = (bool)p.Value;
+        //                        break;
+        //                    case CimType.DateTime:
+        //                        oset = (DateTime)p.Value;
+        //                        break;                            
+        //                    default:
+        //                        break;     
+        //                }
+
+        //                instance = myprop.GenericSetter(instance, oset);
+        //            }
+        //        }
+
+        //        result.Add(instance);
+        //    }
+
+        //    return true;
+        //}
 
     }
 }
