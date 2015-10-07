@@ -25,6 +25,16 @@ namespace yawlib.Magic
         /// </summary>
         public string WmiName { get; set; }
 
+        /// <summary>
+        /// Reference to actualy type.
+        /// </summary>
+        public Type RefType { get; set; }
+
+        /// <summary>
+        /// More info about type here.
+        /// </summary>
+        public MyTypeInfoEnum DetailInfo { get; set; }
+
         // reflection
         public Reflection.GenericSetter GenericSetter { get; set; }
 
@@ -34,6 +44,18 @@ namespace yawlib.Magic
 
             //TODO: Implement Wmi Property mapper attribute;
             this.WmiName = p.Name;
+
+            this.RefType = p.PropertyType;
+
+            //TODO: Handle array creation.
+            if (this.RefType == typeof(string))
+                this.DetailInfo = MyTypeInfoEnum.String;
+            else if (this.RefType == typeof(Guid))
+                this.DetailInfo = MyTypeInfoEnum.Guid;
+            else if (this.RefType == typeof(DateTime))
+                this.DetailInfo = MyTypeInfoEnum.DateTime;
+            else
+                this.DetailInfo = MyTypeInfoEnum.Invalid;
 
             this.GenericSetter = Reflection.CompileGenericSetMethod(p.DeclaringType, p);
         }

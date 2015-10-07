@@ -34,6 +34,7 @@ namespace yawlib.Magic
         /// </summary>
         public Type RefType { get; set; }
 
+
         public SortedDictionary<string, clsMyPropery> WmiProperties = new SortedDictionary<string, clsMyPropery>();
 
         // Reflection
@@ -98,10 +99,10 @@ namespace yawlib.Magic
                         // convert.
                         switch (p.Type)
                         {
-                            case CimType.String:
-                                //TODO: handle when string is actually GUID, UUID, IPAddress, etc.
-                                oset = p.Value; // no conversion.                                
-                                break;
+                            //case CimType.String:
+                            //    //TODO: handle when string is actually GUID, UUID, IPAddress, etc.
+                            //    oset = p.Value; // no conversion.                                
+                            //    break;
                             case CimType.UInt8:
                                 oset = (byte)p.Value;
                                 break;
@@ -121,6 +122,29 @@ namespace yawlib.Magic
                                 oset = (DateTime)p.Value;
                                 break;
                             default:
+
+                                // try to use clsMyType.
+                                switch(myprop.DetailInfo)
+                                {
+                                    case MyTypeInfoEnum.String:
+                                        oset = p.Value; // no conversion.
+                                        break;
+                                    case MyTypeInfoEnum.Guid:
+                                        Guid g;
+                                        if (Guid.TryParse(p.Value as string, out g))
+                                            oset = g;
+                                        break;
+                                    case MyTypeInfoEnum.DateTime:
+                                        DateTime dt;
+                                        if (DateTime.TryParse(p.Value as string, out dt))
+                                            oset = dt;
+                                        break;
+                                    default:
+                                        throw new NotSupportedException(string.Format(
+                                            "Type '{0}' is not supported yet for conversion from '{1}'",
+                                            myprop.RefType, p.Type));
+                                }
+
                                 break;
                         }
 

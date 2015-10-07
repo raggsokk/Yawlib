@@ -38,6 +38,7 @@
   <ItemGroup>
     <Compile Include="Magic\clsMyPropery.cs" />
     <Compile Include="Magic\clsMyType.cs" />
+    <Compile Include="Magic\MyTypeInfoEnum.cs" />
     <Compile Include="Magic\Reflection.cs" />
     <Compile Include="Win32\BaseBoard.cs" />
     <Compile Include="Win32\Bios.cs" />
