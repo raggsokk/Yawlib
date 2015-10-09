@@ -43,6 +43,7 @@
     <Compile Include="Magic\Reflection.cs" />
     <Compile Include="WmiClassNameAttribute.cs" />
     <Compile Include="WmiConnection.cs" />
+    <Compile Include="WmiConnectionOld.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WmiPropertyNameAttribute.cs" />
   </ItemGroup>
