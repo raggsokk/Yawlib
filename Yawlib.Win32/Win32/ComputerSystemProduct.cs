@@ -1,6 +1,6 @@
 ﻿#region License
 //
-// BaseBoard.cs
+// ComputerSystemProduct.cs
 // 
 // The MIT License (MIT)
 //
@@ -33,27 +33,20 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.Management;
+using System.Diagnostics;
 
-namespace yawlib.Win32
+namespace Yawlib.Win32
 {
-    [WmiClassName("Win32_BaseBoard")]
-    public class BaseBoard
+    [DebuggerDisplay("{Name}")]
+    [WmiClassName("Win32_ComputerSystemProduct")]
+    public class ComputerSystemProduct
     {
-        public string Caption { get; set; }
-        public List<string> ConfigOptions { get; set; }
-        public string Description { get; set; }
-        public bool HostingBoard { get; set; }
-        public bool HotSwappable { get; set; }
-        public string Manufacturer { get; set; }
+        public string IdentifyingNumber { get; set; }
         public string Name { get; set; }
-        public bool PoweredOn { get; set; }
-        public string Product { get; set; }
-        public bool Removable { get; set; }
-        public bool Replaceable { get; set; }
-        public bool RequiresDaughterBoard { get; set; }
-        public string SerialNumber { get; set; }
-        public string Status { get; set; }
         public string Version { get; set; }
-
+        public string Caption { get; set; }
+        public string Description { get; set; }
+        public Guid UUID { get; set; }
+        public string Vendor { get; set; }
     }
 }

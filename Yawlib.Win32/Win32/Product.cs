@@ -1,6 +1,6 @@
 ﻿#region License
 //
-// WmiPropertyNameAttribute.cs
+// Product.cs
 // 
 // The MIT License (MIT)
 //
@@ -27,30 +27,34 @@
 #endregion
 
 using System;
-using System.Reflection;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using System.Management;
 using System.Diagnostics;
 
-namespace Yawlib
+namespace Yawlib.Win32
 {
-    /// <summary>
-    /// Enables mapping .net friendly names to WMI property names.
-    /// </summary>
-    [DebuggerDisplay("{WmiPropertyName}")]
-    public class WmiPropertyNameAttribute : Attribute
+    [DebuggerDisplay("{Name}")]
+    [WmiClassName("Win32_Product")]
+    public class Product
     {
-        /// <summary>
-        /// The name to use during wmi mapping.
-        /// </summary>
-        public string WmiPropertyName { get; set; }
-
-        /// <summary>
-        /// Enables mapping .net friendly names to WMI property names.
-        /// </summary>
-        /// <param name="WmiPropertyName">Override the name to use during wmi property mapping.</param>
-        [DebuggerNonUserCode()]
-        public WmiPropertyNameAttribute(string WmiPropertyName)
-        {
-            this.WmiPropertyName = WmiPropertyName;
-        }
+        public string IdentifyingNumber { get; set; }
+        public string Name { get; set; }
+        public string Version { get; set; }
+        public UInt16 AssignmentType { get; set; }
+        public string Caption { get; set; }
+        public string Description { get; set; }
+        public DateTime InstallDate { get; set; }
+        public string InstallSource { get; set; }
+        public Int16 InstallState { get; set; }
+        public string Language { get; set; }
+        public string LocalPackage { get; set; }
+        public string PackageCode { get; set; }
+        public string PackageName { get; set; }
+        public string Vendor { get; set; }
+        public UInt32 WordCount { get; set; }
     }
 }

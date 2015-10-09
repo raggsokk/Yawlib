@@ -1,6 +1,6 @@
 ﻿#region License
 //
-// ComputerSystemProduct.cs
+// Bios.cs
 // 
 // The MIT License (MIT)
 //
@@ -33,18 +33,40 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.Management;
+using System.Diagnostics;
 
-namespace yawlib.Win32
+namespace Yawlib.Win32
 {
-    [WmiClassName("Win32_ComputerSystemProduct")]
-    public class ComputerSystemProduct
+    [DebuggerDisplay("{Name}")]
+    [WmiClassName("Win32_BIOS")]
+    public class Bios
     {
-        public string IdentifyingNumber { get; set; }
         public string Name { get; set; }
+        public string SoftwareElementID { get; set; }
+        public UInt16 SoftwareElementState { get; set; }
+        public UInt16 TargetOperationSystem { get; set; }
         public string Version { get; set; }
+        public UInt16[] BiosCharacteristics { get; set; }
+        [WmiPropertyName("BIOSVersion")]
+        public List<string> BiosVersion { get; set; }
         public string Caption { get; set; }
+        public string CurrentLanguage { get; set; }
         public string Description { get; set; }
-        public Guid UUID { get; set; }
-        public string Vendor { get; set; }
+        public byte EmbeddedControllerMajorVersion { get; set; }
+        public byte EmbeddedControllerMinorVersion { get; set; }
+        public UInt16 InstallableLanguages { get; set; }
+        public List<string> ListOfLanguages { get; set; }
+        public string Manufacturer { get; set; }
+        public bool PrimaryBios { get; set; }
+        public DateTime ReleaseDate { get; set; }
+        public string SerialNumber { get; set; }
+        public string SMBIOSBIOSVersion { get; set; }
+        public UInt16 SMBIOSMajorVersion { get; set; }
+        public UInt16 SMBIOSMinorVersion { get; set; }
+        public bool SMBIOSPresent { get; set; }
+        public string Status { get; set; }
+        public byte SystemBiosMajorVersion { get; set; }
+        public byte SystemBiosMinorVersion { get; set; }
+
     }
 }

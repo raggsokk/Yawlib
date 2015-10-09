@@ -38,9 +38,9 @@ using System.Management;
 using System.Diagnostics;
 using System.Threading;
 
-using yawlib.Magic;
+using Yawlib.Magic;
 
-namespace yawlib
+namespace Yawlib
 {
     /// <summary>
     /// Represents a wmi scope to a local or remote server.

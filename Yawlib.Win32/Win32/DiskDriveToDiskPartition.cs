@@ -1,6 +1,6 @@
 ﻿#region License
 //
-// PhysicalMedia.cs
+// DiskDriveToDiskPartition.cs
 // 
 // The MIT License (MIT)
 //
@@ -25,7 +25,6 @@
 // SOFTWARE. 
 //
 #endregion
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,14 +32,16 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.Management;
+using System.Diagnostics;
 
-namespace yawlib.Win32
+namespace Yawlib.Win32
 {
-    [WmiClassName("Win32_PhysicalMedia")]
-    public class PhysicalMedia
+    [DebuggerDisplay("{Antecedent}")]
+    [WmiClassName("Win32_DiskDriveToDiskPartition")]
+    public class DiskDriveToDiskPartition
     {
-        public string Tag { get; set; }
-        public string SerialNumber { get; set; }
+        public string Antecedent { get; set; }
+        public string Dependent { get; set; }
 
     }
 }

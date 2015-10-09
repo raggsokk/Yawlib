@@ -37,7 +37,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Diagnostics;
 
-namespace yawlib.Magic
+namespace Yawlib.Magic
 {
     [DebuggerDisplay("{WmiClassName}")]
     internal class clsMyType

@@ -9,7 +9,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Diagnostics;
 
-namespace yawlib.Magic
+namespace Yawlib.Magic
 {
     internal sealed class Reflection
     {
@@ -41,7 +41,7 @@ namespace yawlib.Magic
         {
             clsMyType myType = null;
 
-            if(sTypeCache.TryGetValue(fullname, out myType))
+            if (sTypeCache.TryGetValue(fullname, out myType))
             {
                 return myType;
             }
@@ -49,7 +49,7 @@ namespace yawlib.Magic
             {
                 myType = new clsMyType(objType);
 
-                lock(sTypeCacheLock)
+                lock (sTypeCacheLock)
                 {
                     sTypeCache.Add(myType.FullName, myType);
                 }
@@ -64,8 +64,8 @@ namespace yawlib.Magic
         internal CreateObject TryGetCreateObject(string fullname, Type t)
         {
             CreateObject c = null;
-            
-            if(sCreateCache.TryGetValue(fullname, out c))
+
+            if (sCreateCache.TryGetValue(fullname, out c))
             {
                 return c;
             }
@@ -73,7 +73,7 @@ namespace yawlib.Magic
             {
                 c = CompileCreateObject(t);
 
-                lock(sCreateCacheLock)
+                lock (sCreateCacheLock)
                 {
                     sCreateCache.Add(fullname, c);
                 }

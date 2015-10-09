@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace yawlib.Magic
+namespace Yawlib.Magic
 {
     /// <summary>
     /// WMI uses string as placeholder for more complex types.

@@ -1,6 +1,6 @@
 ﻿#region License
 //
-// WmiPropertyNameAttribute.cs
+// PhysicalMedia.cs
 // 
 // The MIT License (MIT)
 //
@@ -27,30 +27,22 @@
 #endregion
 
 using System;
-using System.Reflection;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using System.Management;
 using System.Diagnostics;
 
-namespace Yawlib
+namespace Yawlib.Win32
 {
-    /// <summary>
-    /// Enables mapping .net friendly names to WMI property names.
-    /// </summary>
-    [DebuggerDisplay("{WmiPropertyName}")]
-    public class WmiPropertyNameAttribute : Attribute
+    [DebuggerDisplay("{SerialNumber}")]
+    [WmiClassName("Win32_PhysicalMedia")]
+    public class PhysicalMedia
     {
-        /// <summary>
-        /// The name to use during wmi mapping.
-        /// </summary>
-        public string WmiPropertyName { get; set; }
+        public string Tag { get; set; }
+        public string SerialNumber { get; set; }
 
-        /// <summary>
-        /// Enables mapping .net friendly names to WMI property names.
-        /// </summary>
-        /// <param name="WmiPropertyName">Override the name to use during wmi property mapping.</param>
-        [DebuggerNonUserCode()]
-        public WmiPropertyNameAttribute(string WmiPropertyName)
-        {
-            this.WmiPropertyName = WmiPropertyName;
-        }
     }
 }

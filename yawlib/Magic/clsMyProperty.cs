@@ -38,7 +38,7 @@ using System.Reflection.Emit;
 using System.Diagnostics;
 
 
-namespace yawlib.Magic
+namespace Yawlib.Magic
 {
     /// <summary>
     /// Creates cache about a property.
@@ -106,13 +106,13 @@ namespace yawlib.Magic
             else
                 this.WmiName = p.Name;
 
-            this.RefType = p.PropertyType;            
+            this.RefType = p.PropertyType;
 
             var typename = RefType.Name;
 
-            if(RefType.IsArray)
+            if (RefType.IsArray)
             {
-                this.IsArray = true;                
+                this.IsArray = true;
                 this.BaseType = RefType.GetElementType();
                 //TODO: get wmi datatype here to enable direct array setting.
 
@@ -148,7 +148,7 @@ namespace yawlib.Magic
                     this.CimType = CimType.String;
                     break;
                 case "Guid":
-                    this.DetailInfo = MyTypeInfoEnum.Guid;                    
+                    this.DetailInfo = MyTypeInfoEnum.Guid;
                     break;
                 case "DateTime":
                     this.DetailInfo = MyTypeInfoEnum.DateTime;

@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Yawlib - Yet another WMI Library")]
-[assembly: AssemblyDescription("Yawlib - Yet another WMI Library")]
+[assembly: AssemblyTitle("Yawlib.Win32 - Part of Yet another WMI Library")]
+[assembly: AssemblyDescription("Yawlib.Win32 - Part of Yet another WMI Library")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Kraggs")]
-[assembly: AssemblyProduct("Yawlib")]
+[assembly: AssemblyProduct("Yawlib.Win32")]
 [assembly: AssemblyCopyright("Copyright © 2015 Jarle Hansen")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("0d80a20e-b7ee-4282-95f6-922ab76988f7")]
+[assembly: Guid("b28bfad6-2e50-4e73-8f50-7b7cef5cd688")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -31,6 +31,6 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("0.4.*")]
+[assembly: AssemblyVersion("0.1.*")]
 //[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("0.4.0.0")]
+[assembly: AssemblyFileVersion("0.1.0.0")]

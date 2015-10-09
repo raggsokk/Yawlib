@@ -38,7 +38,7 @@ using System.Reflection.Emit;
 using System.Diagnostics;
 
 
-namespace yawlib.Magic
+namespace Yawlib.Magic
 {
     /// <summary>
     /// Functions related to converting wmi query result into our types.
@@ -98,7 +98,8 @@ namespace yawlib.Magic
                             oset = ConvertObject(p.Value, myprop.DetailInfo, myprop.IsNullable);
 
                         //if (myprop.DetailInfo != MyTypeInfoEnum.Invalid)
-                        instance = myprop.GenericSetter(instance, oset);
+                        if(myprop.IsNullable || oset != null)
+                            instance = myprop.GenericSetter(instance, oset);
                     }
                 }
 
@@ -106,6 +107,36 @@ namespace yawlib.Magic
             }
 
             return flagPerfectConversion;
+        }
+
+        private static object ConvertGuid(object wmiValue)
+        {
+            //TODO: Handle '{<guid>}'
+            Guid g;
+            if (Guid.TryParse(wmiValue as string, out g))
+                return g;
+            else
+                return null;
+        }
+
+        private static object ConvertDateTime(object dt) //, bool nullable = false)
+        {
+            //TODO: Add DateTimeFormat to WmiPropertyName attribute to enable custom datetime conversion.
+            var strDateTime = dt as string;
+
+            if(strDateTime != null)
+            {
+                if (strDateTime.Length > 22 && (strDateTime[21] == '+' || strDateTime[21] == '-'))
+                    return ManagementDateTimeConverter.ToDateTime(strDateTime);
+                else
+                {
+                    DateTime result;
+                    if (DateTime.TryParse(strDateTime, out result))
+                        return result;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -120,15 +151,17 @@ namespace yawlib.Magic
             switch(detailinfo)
             {
                 case MyTypeInfoEnum.Guid:
-                    Guid g;
-                    if (Guid.TryParse(wmivalue as string, out g))
-                        return g;
-                    else if (nullable)
-                        return null;
-                    else
-                        return Guid.Empty;
+                    return ConvertGuid(wmivalue);
+                    //Guid g;
+                    //if (Guid.TryParse(wmivalue as string, out g))
+                    //    return g;
+                    //else if (nullable)
+                    //    return null;
+                    //else
+                    //    return Guid.Empty;
                 case MyTypeInfoEnum.DateTime:
-                    return ManagementDateTimeConverter.ToDateTime(wmivalue.ToString());
+                    return ConvertDateTime(wmivalue);                    
+                    //return ManagementDateTimeConverter.ToDateTime(wmivalue.ToString());
                 case MyTypeInfoEnum.TimeSpan:
                     return ManagementDateTimeConverter.ToTimeSpan(wmivalue.ToString());
                 default:

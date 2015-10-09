@@ -1,6 +1,6 @@
 ﻿#region License
 //
-// WmiPropertyNameAttribute.cs
+// DiskPartition.cs
 // 
 // The MIT License (MIT)
 //
@@ -27,30 +27,36 @@
 #endregion
 
 using System;
-using System.Reflection;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using System.Management;
 using System.Diagnostics;
 
-namespace Yawlib
+namespace Yawlib.Win32
 {
-    /// <summary>
-    /// Enables mapping .net friendly names to WMI property names.
-    /// </summary>
-    [DebuggerDisplay("{WmiPropertyName}")]
-    public class WmiPropertyNameAttribute : Attribute
+    [DebuggerDisplay("{Name}")]
+    [WmiClassName("Win32_DiskPartition")]
+    public class DiskPartition
     {
-        /// <summary>
-        /// The name to use during wmi mapping.
-        /// </summary>
-        public string WmiPropertyName { get; set; }
-
-        /// <summary>
-        /// Enables mapping .net friendly names to WMI property names.
-        /// </summary>
-        /// <param name="WmiPropertyName">Override the name to use during wmi property mapping.</param>
-        [DebuggerNonUserCode()]
-        public WmiPropertyNameAttribute(string WmiPropertyName)
-        {
-            this.WmiPropertyName = WmiPropertyName;
-        }
+        public string DeviceID { get; set; }
+        public UInt32 BlockSize { get; set; }
+        public bool Bootable { get; set; }
+        public bool BootPartition { get; set; }
+        public string Caption { get; set; }
+        public string CreationClassName { get; set; }
+        public string Description { get; set; }
+        public UInt32 DiskIndex { get; set; }
+        public UInt32 Index { get; set; }
+        public string Name { get; set; }
+        public UInt64 NumberOfBlocks { get; set; }
+        public bool PrimaryPartition { get; set; }
+        public UInt64 Size { get; set; }
+        public UInt64 StartingOffset { get; set; }
+        public string SystemCreationClassName { get; set; }
+        public string SystemName { get; set; }
+        public string Type { get; set; }
     }
 }

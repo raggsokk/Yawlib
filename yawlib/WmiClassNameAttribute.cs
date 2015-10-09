@@ -30,7 +30,7 @@ using System;
 using System.Reflection;
 using System.Diagnostics;
 
-namespace yawlib
+namespace Yawlib
 {
     /// <summary>
     /// Enables mapping friendly .net names to WMI Class Names.
