@@ -63,12 +63,29 @@ namespace yawlib.Magic
         /// </summary>
         public MyTypeInfoEnum DetailInfo { get; set; }
 
+        /// <summary>
+        /// Is this a generic list.
+        /// </summary>
         public bool IsList { get; set; }
+        /// <summary>
+        /// Is this an array.
+        /// </summary>
         public bool IsArray { get; set; }
 
+        /// <summary>
+        /// Base array. For nullable and array this is the underlying type. For list this is the generic type.
+        /// </summary>
+        public Type BaseType { get; set; }
+
+        /// <summary>
+        /// If this object is nullable.
+        /// </summary>
         public bool IsNullable { get; set; }
 
         // reflection
+        /// <summary>
+        /// Stores a generic setter for this property.
+        /// </summary>
         public Reflection.GenericSetter GenericSetter { get; set; }
 
         public clsMyProperty(PropertyInfo p)
@@ -81,26 +98,40 @@ namespace yawlib.Magic
             else
                 this.WmiName = p.Name;
 
-            this.RefType = p.PropertyType;
-            this.IsArray = RefType.IsArray;
+            this.RefType = p.PropertyType;            
 
             var typename = RefType.Name;
 
-            if (RefType.IsGenericType)
+            if(RefType.IsArray)
+            {
+                this.IsArray = true;                
+                this.BaseType = RefType.GetElementType();
+                //TODO: get wmi datatype here to enable direct array setting.
+
+                typename = this.BaseType.Name;
+            }
+            else if (RefType.IsGenericType)
             {
                 var g = RefType.GetGenericTypeDefinition();
 
-                typename = RefType.GenericTypeArguments[0].Name;
-
                 if (g.Equals(typeof(Nullable<>)))
+                {
                     this.IsNullable = true;
+                    this.BaseType = this.RefType.UnderlyingSystemType;
+                    typename = this.BaseType.Name;
+                }
                 else if (g.Equals(typeof(List<>)))
+                {
                     this.IsList = true;
+                    this.BaseType = RefType.GetGenericArguments().First();
+                    typename = this.BaseType.Name;
+                }
                 else
                     typename = "INVALID";
-            }            
 
-            switch(typename)
+            }
+
+            switch (typename)
             {
                 case "String":
                     this.DetailInfo = MyTypeInfoEnum.String;

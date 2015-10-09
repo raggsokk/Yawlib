@@ -170,7 +170,8 @@ namespace yawlib
                 foreach (var i in data)
                     tmplist.Add(i);
 
-                var success = myType.Convert(tmplist, result);
+                //var success = myType.Convert(tmplist, result);
+                var success = MyConvert.Convert(tmplist, myType, result);
             }
 
             //return parsed data.
@@ -221,8 +222,9 @@ namespace yawlib
 
                 //if (e.Status == ManagementStatus.NoError)
                 {
-                    if (myType.Convert(list, result))
-                        tsc.TrySetResult(result);
+                    var perfect = MyConvert.Convert(list, myType, result);
+                    //if (myType.Convert(list, result))
+                    tsc.TrySetResult(result);
                 }                
 
                 //TODO: handle e.Status??

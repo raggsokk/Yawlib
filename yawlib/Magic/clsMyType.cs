@@ -62,10 +62,15 @@ namespace yawlib.Magic
         /// </summary>
         public Type RefType { get; set; }
 
-
+        /// <summary>
+        /// A hash of wmi name to property name mapping.
+        /// </summary>
         public SortedDictionary<string, clsMyProperty> WmiProperties = new SortedDictionary<string, clsMyProperty>();
 
         // Reflection
+        /// <summary>
+        /// Direct reference to a type creation delegate.
+        /// </summary>
         public Reflection.CreateObject CreateObject { get; set; }                    
 
         internal clsMyType(Type t)
@@ -83,7 +88,8 @@ namespace yawlib.Magic
                 this.WmiClassName = t.Name;
 
             // Compile createobject.
-            this.CreateObject = Reflection.CompileCreateObject(t);            
+            //this.CreateObject = Reflection.CompileCreateObject(t);            
+            this.CreateObject = Reflection.Instance.TryGetCreateObject(t.FullName, t);
 
             var props = t.GetProperties(BindingFlags.Instance | BindingFlags.Public); // | BindingFlags.SetProperty
 
@@ -95,194 +101,14 @@ namespace yawlib.Magic
             }
         }
 
+        /// <summary>
+        /// Creates a Select All WQL Query.
+        /// </summary>
+        /// <returns></returns>
         internal string CreateSelectAll()
         {
             return string.Format("SELECT * FROM {0}",
                 WmiClassName);
-        }
-
-        internal bool Convert(List<ManagementBaseObject> data, System.Collections.IList result)
-        {
-            if (data == null)
-                throw new ArgumentNullException(string.Format("Argument cant be null. Arg='{0}', Type='{1}'", nameof(data), typeof(ManagementObjectCollection).Name));
-
-            if (data.Count == 0)
-                return true;
-
-            foreach (var item in data)
-            {
-                var instance = this.CreateObject();
-
-                foreach (var p in item.Properties)
-                {
-                    if (!p.IsLocal)
-                        continue; // if prop not defined on this instance, skip searching for it.
-                    //else if (p.IsArray)
-                    //    continue; // array is not supported yet...
-
-                    clsMyProperty myprop = null;
-
-                    if (WmiProperties.TryGetValue(p.Name, out myprop))
-                    {
-                        object oset = null;
-
-                        switch(myprop.DetailInfo)
-                        {
-                            case MyTypeInfoEnum.String:
-                                if (myprop.IsArray && p.IsArray)
-                                    oset = (string[])p.Value;
-                                if(myprop.IsList && p.IsArray)
-                                {
-                                    var list = new List<string>();
-
-                                    foreach(var o in (string[])p.Value)
-                                    {
-                                        list.Add(o);
-                                    }
-                                    oset = list;
-                                }
-                                else
-                                    oset = p.Value;
-                                break;
-                            case MyTypeInfoEnum.Guid:
-                                Guid g;
-                                if (Guid.TryParse(p.Value as string, out g))
-                                    oset = g;
-                                break;
-                            case MyTypeInfoEnum.DateTime:
-                                oset = ManagementDateTimeConverter.ToDateTime(p.Value.ToString());
-                                break;
-                            case MyTypeInfoEnum.TimeSpan:
-                                oset = ManagementDateTimeConverter.ToTimeSpan(p.Value.ToString());
-                                break;
-                            case MyTypeInfoEnum.Bool:
-                                oset = (bool)p.Value;
-                                break;
-                            case MyTypeInfoEnum.UInt8:
-                                oset = (byte)p.Value;
-                                break;
-                            case MyTypeInfoEnum.UInt16:
-                                oset = (UInt16)p.Value;
-                                break;
-                            case MyTypeInfoEnum.UInt32:
-                                oset = (UInt32)p.Value;
-                                break;
-                            case MyTypeInfoEnum.UInt64:
-                                oset = (UInt64)p.Value;
-                                break;
-                            case MyTypeInfoEnum.Int8:
-                                oset = (byte)p.Value;
-                                break;
-                            case MyTypeInfoEnum.Int16:
-                                oset = (UInt16)p.Value;
-                                break;
-                            case MyTypeInfoEnum.Int32:
-                                oset = (UInt32)p.Value;
-                                break;
-                            case MyTypeInfoEnum.Int64:
-                                oset = (UInt64)p.Value;
-                                break;
-                            case MyTypeInfoEnum.Char:
-                                oset = (Char)p.Value;
-                                break;
-                            case MyTypeInfoEnum.Float:
-                                oset = (float)p.Value;
-                                break;
-                            case MyTypeInfoEnum.Double:
-                                oset = (double)p.Value;
-                                break;
-
-                        }
-
-                        if(myprop.DetailInfo != MyTypeInfoEnum.Invalid)
-                            instance = myprop.GenericSetter(instance, oset);
-
-
-                        //// convert.
-                        //switch (p.Type)
-                        //{
-                        //    //case CimType.String:
-                        //    //    //TODO: handle when string is actually GUID, UUID, IPAddress, etc.
-                        //    //    oset = p.Value; // no conversion.                                
-                        //    //    break;
-                        //    case CimType.UInt8:
-                        //        oset = (byte)p.Value;
-                        //        break;
-                        //    case CimType.UInt16:
-                        //        oset = (UInt16)p.Value;
-                        //        break;
-                        //    case CimType.UInt32:
-                        //        oset = (UInt32)p.Value;
-                        //        break;
-                        //    case CimType.UInt64:
-                        //        oset = (UInt64)p.Value;
-                        //        break;
-                        //    case CimType.Boolean:
-                        //        oset = (bool)p.Value;
-                        //        break;
-                        //    case CimType.SInt8:
-                        //        oset = (sbyte)p.Value;
-                        //        break;
-                        //    case CimType.SInt16:
-                        //        oset = (Int16)p.Value;
-                        //        break;
-                        //    case CimType.SInt32:
-                        //        oset = (Int32)p.Value;
-                        //        break;
-                        //    case CimType.SInt64:
-                        //        oset = (Int64)p.Value;
-                        //        break;
-                        //    case CimType.DateTime:
-                        //        var strDatetime = p.Value.ToString();
-
-                        //        if (myprop.DetailInfo == MyTypeInfoEnum.DateTime)
-                        //            oset = ManagementDateTimeConverter.ToDateTime(strDatetime);
-                        //        else if (myprop.DetailInfo == MyTypeInfoEnum.TimeSpan)
-                        //            oset = ManagementDateTimeConverter.ToTimeSpan(strDatetime);
-                        //        else if (myprop.DetailInfo == MyTypeInfoEnum.String)
-                        //            oset = strDatetime;
-                        //        else
-                        //        {
-                        //            // throw error.
-                        //            throw new ArgumentException(string.Format("Cant convert WMi DateTime to type '{0}'", myprop.RefType));
-                        //        }
-                        //        break;
-                        //    default:
-
-                        //        // try to use clsMyType.
-                        //        switch(myprop.DetailInfo)
-                        //        {
-                        //            case MyTypeInfoEnum.String:
-                        //                oset = p.Value; // no conversion.
-                        //                break;
-                        //            case MyTypeInfoEnum.Guid:
-                        //                Guid g;
-                        //                if (Guid.TryParse(p.Value as string, out g))
-                        //                    oset = g;
-                        //                break;
-                        //            case MyTypeInfoEnum.DateTime:
-                        //                //todo: reuse datetime conversion above....
-                        //                DateTime dt;
-                        //                if (DateTime.TryParse(p.Value as string, out dt))
-                        //                    oset = dt;
-                        //                break;
-                        //            default:
-                        //                throw new NotSupportedException(string.Format(
-                        //                    "Type '{0}' is not supported yet for conversion from '{1}'",
-                        //                    myprop.RefType, p.Type));
-                        //        }
-
-                        //        break;
-                        //}
-
-                        //instance = myprop.GenericSetter(instance, oset);
-                    }
-                }
-
-                result.Add(instance);
-            }
-
-            return true;
         }
 
     }

@@ -44,7 +44,7 @@ namespace yawlib.Win32
         public UInt16 SoftwareElementState { get; set; }
         public UInt16 TargetOperationSystem { get; set; }
         public string Version { get; set; }
-        //public UInt16[] BiosCharacteristics { get; set; }
+        public UInt16[] BiosCharacteristics { get; set; }
         [WmiPropertyName("BIOSVersion")]
         public List<string> BiosVersion { get; set; }
         public string Caption { get; set; }

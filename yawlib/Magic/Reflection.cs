@@ -58,6 +58,30 @@ namespace yawlib.Magic
             }
         }
 
+        private SortedDictionary<string, CreateObject> sCreateCache = new SortedDictionary<string, CreateObject>();
+        private object sCreateCacheLock = new object();
+
+        internal CreateObject TryGetCreateObject(string fullname, Type t)
+        {
+            CreateObject c = null;
+            
+            if(sCreateCache.TryGetValue(fullname, out c))
+            {
+                return c;
+            }
+            else
+            {
+                c = CompileCreateObject(t);
+
+                lock(sCreateCacheLock)
+                {
+                    sCreateCache.Add(fullname, c);
+                }
+
+                return c;
+            }
+        }
+
         #endregion
 
         #region Reflection (could be static actually.
