@@ -44,7 +44,8 @@ namespace Yawlib.Win32
         //public string IdentifyingNumber { get; set; }
         public Guid IdentifyingNumber { get; set; }
         public string Name { get; set; }
-        public string Version { get; set; }
+        //public string Version { get; set; }
+        public Version Version { get; set; }
         public UInt16 AssignmentType { get; set; }
         public string Caption { get; set; }
         public string Description { get; set; }

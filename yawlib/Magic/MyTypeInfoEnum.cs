@@ -21,6 +21,7 @@ namespace Yawlib.Magic
         Guid,
         DateTime,
         TimeSpan,
+        Version,
 
         Bool,
         Int8,

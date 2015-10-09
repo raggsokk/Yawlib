@@ -167,6 +167,9 @@ namespace Yawlib.Magic
                 case "TimeSpan":
                     this.DetailInfo = MyTypeInfoEnum.TimeSpan;
                     break;
+                case "Version":
+                    this.DetailInfo = MyTypeInfoEnum.Version;
+                    break;
                 case "UInt16":
                     this.DetailInfo = MyTypeInfoEnum.UInt16;
                     this.CimType = CimType.UInt16;

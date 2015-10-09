@@ -111,6 +111,26 @@ namespace Yawlib.Magic
         }
 
         /// <summary>
+        /// Convert a wmi version string into an actual version struct.
+        /// </summary>
+        /// <param name="wmiValue"></param>
+        /// <returns></returns>
+        private static object ConvertVersion(object wmiValue)
+        {
+            var strVersion = wmiValue as string;
+
+            if(strVersion != null)
+            {
+                Version v;
+
+                if (Version.TryParse(strVersion, out v))
+                    return v;
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Convert wmi guid string into an actual guid.
         /// </summary>
         /// <param name="wmiValue"></param>
@@ -187,6 +207,8 @@ namespace Yawlib.Magic
                     //return ManagementDateTimeConverter.ToDateTime(wmivalue.ToString());
                 case MyTypeInfoEnum.TimeSpan:
                     return ManagementDateTimeConverter.ToTimeSpan(wmivalue.ToString());
+                case MyTypeInfoEnum.Version:
+                    return ConvertVersion(wmivalue);
                 default:
                     return wmivalue; // no conversion needed. hopefully.
             }
