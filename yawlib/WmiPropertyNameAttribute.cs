@@ -44,6 +44,11 @@ namespace Yawlib
         public string WmiPropertyName { get; set; }
 
         /// <summary>
+        /// If set on a datetime, enables custom formatting of datetime.
+        /// </summary>
+        public string DateTimeFormat { get; set; }
+
+        /// <summary>
         /// Enables mapping .net friendly names to WMI property names.
         /// </summary>
         /// <param name="WmiPropertyName">Override the name to use during wmi property mapping.</param>

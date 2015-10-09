@@ -47,6 +47,7 @@ namespace Yawlib.Win32
         public UInt16 AssignmentType { get; set; }
         public string Caption { get; set; }
         public string Description { get; set; }
+        [WmiPropertyName("InstallDate", DateTimeFormat = "yyyyMMdd")]
         public DateTime InstallDate { get; set; }
         public string InstallSource { get; set; }
         public Int16 InstallState { get; set; }

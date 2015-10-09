@@ -95,10 +95,11 @@ namespace Yawlib.Magic
                         else if (myprop.IsList)
                             oset = CreateGenericList(p.Value, myprop);
                         else
-                            oset = ConvertObject(p.Value, myprop.DetailInfo, myprop.IsNullable);
+                            oset = ConvertObject(p.Value, myprop);
+                        //oset = ConvertObject(p.Value, myprop.DetailInfo, myprop.IsNullable);
 
                         //if (myprop.DetailInfo != MyTypeInfoEnum.Invalid)
-                        if(myprop.IsNullable || oset != null)
+                        if (myprop.IsNullable || oset != null)
                             instance = myprop.GenericSetter(instance, oset);
                     }
                 }
@@ -119,18 +120,26 @@ namespace Yawlib.Magic
                 return null;
         }
 
-        private static object ConvertDateTime(object dt) //, bool nullable = false)
+        private static object ConvertDateTime(object dt, string CustomFormat = null) //, bool nullable = false)
         {
             //TODO: Add DateTimeFormat to WmiPropertyName attribute to enable custom datetime conversion.
             var strDateTime = dt as string;
+            DateTime result;
 
+            if(!string.IsNullOrWhiteSpace(CustomFormat))
+            {
+                if (DateTime.TryParseExact(strDateTime, CustomFormat, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out result))
+                    return result;
+            }
+
+            // if not custom format succeded, try fallback anyway.
             if(strDateTime != null)
             {
                 if (strDateTime.Length > 22 && (strDateTime[21] == '+' || strDateTime[21] == '-'))
                     return ManagementDateTimeConverter.ToDateTime(strDateTime);
                 else
                 {
-                    DateTime result;
+                    //DateTime result;
                     if (DateTime.TryParse(strDateTime, out result))
                         return result;
                 }
@@ -146,9 +155,9 @@ namespace Yawlib.Magic
         /// <param name="detailinfo">.net type enum.</param>
         /// <param name="nullable">if value is nullable or should return default value.</param>
         /// <returns></returns>
-        internal static object ConvertObject(object wmivalue, MyTypeInfoEnum detailinfo, bool nullable = false)
+        internal static object ConvertObject(object wmivalue, clsMyProperty myProp) // MyTypeInfoEnum detailinfo, bool nullable = false)
         {
-            switch(detailinfo)
+            switch(myProp.DetailInfo)
             {
                 case MyTypeInfoEnum.Guid:
                     return ConvertGuid(wmivalue);
@@ -160,7 +169,7 @@ namespace Yawlib.Magic
                     //else
                     //    return Guid.Empty;
                 case MyTypeInfoEnum.DateTime:
-                    return ConvertDateTime(wmivalue);                    
+                    return ConvertDateTime(wmivalue, myProp.CustomFormat);
                     //return ManagementDateTimeConverter.ToDateTime(wmivalue.ToString());
                 case MyTypeInfoEnum.TimeSpan:
                     return ManagementDateTimeConverter.ToTimeSpan(wmivalue.ToString());
@@ -190,7 +199,8 @@ namespace Yawlib.Magic
             foreach(var obj in array)
             {
                 // convert objects in case of guid array or datetime arrays
-                var o = ConvertObject(obj, prop.DetailInfo, prop.IsNullable);
+                //var o = ConvertObject(obj, prop.DetailInfo, prop.IsNullable);
+                var o = ConvertObject(obj, prop);
 
                 // set object.
                 result.SetValue(o, current++);
@@ -220,7 +230,8 @@ namespace Yawlib.Magic
             foreach(var obj in array)
             {
                 // convert objects in case of guid list or datetime list
-                var o = ConvertObject(obj, prop.DetailInfo, prop.IsNullable);
+                //var o = ConvertObject(obj, prop.DetailInfo, prop.IsNullable);
+                var o = ConvertObject(obj, prop);
 
                 // add
                 list.Add(o);

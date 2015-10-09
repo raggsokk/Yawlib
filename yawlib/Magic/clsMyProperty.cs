@@ -90,6 +90,11 @@ namespace Yawlib.Magic
         /// </summary>
         public bool IsNullable { get; set; }
 
+        /// <summary>
+        /// Sets the custom format (DateTime only currently) for parsing object.
+        /// </summary>
+        public string CustomFormat { get; set; }
+
         // reflection
         /// <summary>
         /// Stores a generic setter for this property.
@@ -102,9 +107,14 @@ namespace Yawlib.Magic
 
             var attribWmiProp = p.GetCustomAttribute<WmiPropertyNameAttribute>();
             if (attribWmiProp != null)
+            {
                 this.WmiName = attribWmiProp.WmiPropertyName;
+                this.CustomFormat = attribWmiProp.DateTimeFormat;
+            }
             else
                 this.WmiName = p.Name;
+
+            
 
             this.RefType = p.PropertyType;
 
