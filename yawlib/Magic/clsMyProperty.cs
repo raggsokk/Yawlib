@@ -63,6 +63,11 @@ namespace yawlib.Magic
         /// </summary>
         public MyTypeInfoEnum DetailInfo { get; set; }
 
+        public bool IsList { get; set; }
+        public bool IsArray { get; set; }
+
+        public bool IsNullable { get; set; }
+
         // reflection
         public Reflection.GenericSetter GenericSetter { get; set; }
 
@@ -73,20 +78,82 @@ namespace yawlib.Magic
             var attribWmiProp = p.GetCustomAttribute<WmiPropertyNameAttribute>();
             if (attribWmiProp != null)
                 this.WmiName = attribWmiProp.WmiPropertyName;
-            else            
+            else
                 this.WmiName = p.Name;
 
             this.RefType = p.PropertyType;
+            this.IsArray = RefType.IsArray;
 
-            //TODO: Handle array creation.
-            if (this.RefType == typeof(string))
-                this.DetailInfo = MyTypeInfoEnum.String;
-            else if (this.RefType == typeof(Guid))
-                this.DetailInfo = MyTypeInfoEnum.Guid;
-            else if (this.RefType == typeof(DateTime))
-                this.DetailInfo = MyTypeInfoEnum.DateTime;
-            else
-                this.DetailInfo = MyTypeInfoEnum.Invalid;
+            var typename = RefType.Name;
+
+            if (RefType.IsGenericType)
+            {
+                var g = RefType.GetGenericTypeDefinition();
+
+                typename = RefType.GenericTypeArguments[0].Name;
+
+                if (g.Equals(typeof(Nullable<>)))
+                    this.IsNullable = true;
+                else if (g.Equals(typeof(List<>)))
+                    this.IsList = true;
+                else
+                    typename = "INVALID";
+            }            
+
+            switch(typename)
+            {
+                case "String":
+                    this.DetailInfo = MyTypeInfoEnum.String;
+                    break;
+                case "Guid":
+                    this.DetailInfo = MyTypeInfoEnum.Guid;
+                    break;
+                case "DateTime":
+                    this.DetailInfo = MyTypeInfoEnum.DateTime;
+                    break;
+                case "TimeSpan":
+                    this.DetailInfo = MyTypeInfoEnum.TimeSpan;
+                    break;
+                case "UInt16":
+                    this.DetailInfo = MyTypeInfoEnum.UInt16;
+                    break;
+                case "UInt32":
+                    this.DetailInfo = MyTypeInfoEnum.UInt32;
+                    break;
+                case "UInt64":
+                    this.DetailInfo = MyTypeInfoEnum.UInt64;
+                    break;
+                case "Boolean":
+                    this.DetailInfo = MyTypeInfoEnum.Bool;
+                    break;
+                case "Int16":
+                    this.DetailInfo = MyTypeInfoEnum.Int16;
+                    break;
+                case "Int32":
+                    this.DetailInfo = MyTypeInfoEnum.Int32;
+                    break;
+                case "Int64":
+                    this.DetailInfo = MyTypeInfoEnum.Int64;
+                    break;
+                case "Char":
+                    this.DetailInfo = MyTypeInfoEnum.Char;
+                    break;
+                case "Single":
+                    this.DetailInfo = MyTypeInfoEnum.Float;
+                    break;
+                case "Double":
+                    this.DetailInfo = MyTypeInfoEnum.Double;
+                    break;
+                case "Byte":
+                    this.DetailInfo = MyTypeInfoEnum.UInt8;
+                    break;
+                case "SByte":
+                    this.DetailInfo = MyTypeInfoEnum.Int8;
+                    break;
+                default:
+                    this.DetailInfo = MyTypeInfoEnum.Invalid;
+                    break;
+            }
 
             this.GenericSetter = Reflection.CompileGenericSetMethod(p.DeclaringType, p);
         }
