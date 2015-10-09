@@ -40,6 +40,9 @@ using System.Diagnostics;
 
 namespace yawlib.Magic
 {
+    /// <summary>
+    /// Creates cache about a property.
+    /// </summary>
     [DebuggerDisplay("{WmiName}")]
     internal class clsMyProperty
     {
@@ -62,6 +65,11 @@ namespace yawlib.Magic
         /// More info about type here.
         /// </summary>
         public MyTypeInfoEnum DetailInfo { get; set; }
+
+        /// <summary>
+        /// The wmi type compatible for direct mapping.
+        /// </summary>
+        public CimType CimType { get; set; }
 
         /// <summary>
         /// Is this a generic list.
@@ -131,55 +139,71 @@ namespace yawlib.Magic
 
             }
 
+            this.CimType = CimType.None;
+
             switch (typename)
             {
                 case "String":
                     this.DetailInfo = MyTypeInfoEnum.String;
+                    this.CimType = CimType.String;
                     break;
                 case "Guid":
-                    this.DetailInfo = MyTypeInfoEnum.Guid;
+                    this.DetailInfo = MyTypeInfoEnum.Guid;                    
                     break;
                 case "DateTime":
                     this.DetailInfo = MyTypeInfoEnum.DateTime;
+                    this.CimType = CimType.DateTime;
                     break;
                 case "TimeSpan":
                     this.DetailInfo = MyTypeInfoEnum.TimeSpan;
                     break;
                 case "UInt16":
                     this.DetailInfo = MyTypeInfoEnum.UInt16;
+                    this.CimType = CimType.UInt16;
                     break;
                 case "UInt32":
                     this.DetailInfo = MyTypeInfoEnum.UInt32;
+                    this.CimType = CimType.UInt32;
                     break;
                 case "UInt64":
                     this.DetailInfo = MyTypeInfoEnum.UInt64;
+                    this.CimType = CimType.UInt64;
                     break;
                 case "Boolean":
                     this.DetailInfo = MyTypeInfoEnum.Bool;
+                    this.CimType = CimType.Boolean;
                     break;
                 case "Int16":
                     this.DetailInfo = MyTypeInfoEnum.Int16;
+                    this.CimType = CimType.SInt16;
                     break;
                 case "Int32":
                     this.DetailInfo = MyTypeInfoEnum.Int32;
+                    this.CimType = CimType.SInt32;
                     break;
                 case "Int64":
                     this.DetailInfo = MyTypeInfoEnum.Int64;
+                    this.CimType = CimType.SInt64;
                     break;
                 case "Char":
                     this.DetailInfo = MyTypeInfoEnum.Char;
+                    this.CimType = CimType.Char16;
                     break;
                 case "Single":
                     this.DetailInfo = MyTypeInfoEnum.Float;
+                    this.CimType = CimType.Real32;
                     break;
                 case "Double":
                     this.DetailInfo = MyTypeInfoEnum.Double;
+                    this.CimType = CimType.Real64;
                     break;
                 case "Byte":
                     this.DetailInfo = MyTypeInfoEnum.UInt8;
+                    this.CimType = CimType.UInt8;
                     break;
                 case "SByte":
                     this.DetailInfo = MyTypeInfoEnum.Int8;
+                    this.CimType = CimType.SInt8;
                     break;
                 default:
                     this.DetailInfo = MyTypeInfoEnum.Invalid;

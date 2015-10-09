@@ -87,12 +87,11 @@ namespace yawlib.Magic
 
                         if (myprop.IsArray)
                         {
-                            //TODO: Have 100% wmi prop value type to myprop value type match.
-                            //if (myprop.BaseType.IsPrimitive)
-                            //    oset = p.Value;
-                            //else
+                            if (myprop.CimType == p.Type)
+                                oset = p.Value;
+                            else
                                 oset = CreateArray(p.Value, myprop);
-                        }                            
+                        }
                         else if (myprop.IsList)
                             oset = CreateGenericList(p.Value, myprop);
                         else
@@ -117,7 +116,7 @@ namespace yawlib.Magic
         /// <param name="nullable">if value is nullable or should return default value.</param>
         /// <returns></returns>
         internal static object ConvertObject(object wmivalue, MyTypeInfoEnum detailinfo, bool nullable = false)
-        {            
+        {
             switch(detailinfo)
             {
                 case MyTypeInfoEnum.Guid:
