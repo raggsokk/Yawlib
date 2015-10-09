@@ -41,7 +41,8 @@ namespace Yawlib.Win32
     [WmiClassName("Win32_Product")]
     public class Product
     {
-        public string IdentifyingNumber { get; set; }
+        //public string IdentifyingNumber { get; set; }
+        public Guid IdentifyingNumber { get; set; }
         public string Name { get; set; }
         public string Version { get; set; }
         public UInt16 AssignmentType { get; set; }
@@ -53,7 +54,8 @@ namespace Yawlib.Win32
         public Int16 InstallState { get; set; }
         public string Language { get; set; }
         public string LocalPackage { get; set; }
-        public string PackageCode { get; set; }
+        //public string PackageCode { get; set; }
+        public Guid PackageCode { get; set; }
         public string PackageName { get; set; }
         public string Vendor { get; set; }
         public UInt32 WordCount { get; set; }

@@ -110,19 +110,33 @@ namespace Yawlib.Magic
             return flagPerfectConversion;
         }
 
+        /// <summary>
+        /// Convert wmi guid string into an actual guid.
+        /// </summary>
+        /// <param name="wmiValue"></param>
+        /// <returns></returns>
         private static object ConvertGuid(object wmiValue)
-        {
-            //TODO: Handle '{<guid>}'
+        {            
             Guid g;
-            if (Guid.TryParse(wmiValue as string, out g))
-                return g;
-            else
-                return null;
+            var strGuid = wmiValue as string;
+
+            if(strGuid != null)
+            {
+                if (Guid.TryParse(strGuid, out g))
+                    return g;
+            }
+
+            return null;
         }
 
+        /// <summary>
+        /// Convert wmi datetime string into datetime.
+        /// </summary>
+        /// <param name="dt"></param>
+        /// <param name="CustomFormat"></param>
+        /// <returns></returns>
         private static object ConvertDateTime(object dt, string CustomFormat = null) //, bool nullable = false)
-        {
-            //TODO: Add DateTimeFormat to WmiPropertyName attribute to enable custom datetime conversion.
+        {            
             var strDateTime = dt as string;
             DateTime result;
 
@@ -152,11 +166,11 @@ namespace Yawlib.Magic
         /// Convert wmi value data into .net friendly values.
         /// </summary>
         /// <param name="wmivalue">raw wmi type.</param>
-        /// <param name="detailinfo">.net type enum.</param>
-        /// <param name="nullable">if value is nullable or should return default value.</param>
+        /// <param name="myProp"></param>
         /// <returns></returns>
         internal static object ConvertObject(object wmivalue, clsMyProperty myProp) // MyTypeInfoEnum detailinfo, bool nullable = false)
         {
+            //TODO: mayby change backup function prameters to before with not whole clsMyProperty??
             switch(myProp.DetailInfo)
             {
                 case MyTypeInfoEnum.Guid:
