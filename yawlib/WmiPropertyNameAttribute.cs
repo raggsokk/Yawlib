@@ -1,6 +1,6 @@
 ﻿#region License
 //
-// ComputerSystemProduct.cs
+// WmiPropertyNameAttribute.cs
 // 
 // The MIT License (MIT)
 //
@@ -27,24 +27,30 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Reflection;
+using System.Diagnostics;
 
-using System.Management;
-
-namespace yawlib.Win32
+namespace yawlib
 {
-    [WmiClassName("Win32_ComputerSystemProduct")]
-    public class ComputerSystemProduct
+    /// <summary>
+    /// Enables mapping .net friendly names to WMI property names.
+    /// </summary>
+    [DebuggerDisplay("{WmiPropertyName}")]
+    public class WmiPropertyNameAttribute : Attribute
     {
-        public string IdentifyingNumber { get; set; }
-        public string Name { get; set; }
-        public string Version { get; set; }
-        public string Caption { get; set; }
-        public string Description { get; set; }
-        public Guid UUID { get; set; }
-        public string Vendor { get; set; }
+        /// <summary>
+        /// The name to use during wmi mapping.
+        /// </summary>
+        public string WmiPropertyName { get; set; }
+
+        /// <summary>
+        /// Enables mapping .net friendly names to WMI property names.
+        /// </summary>
+        /// <param name="WmiPropertyName">Override the name to use during wmi property mapping.</param>
+        [DebuggerNonUserCode()]
+        public WmiPropertyNameAttribute(string WmiPropertyName)
+        {
+            this.WmiPropertyName = WmiPropertyName;
+        }
     }
 }

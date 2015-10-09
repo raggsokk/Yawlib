@@ -28,12 +28,14 @@
 
 using System;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace yawlib
 {
     /// <summary>
     /// Enables mapping friendly .net names to WMI Class Names.
     /// </summary>
+    [DebuggerDisplay("WmiClassName")]
     [AttributeUsage(AttributeTargets.Class)]
     public class WmiClassNameAttribute : Attribute
     {
@@ -46,6 +48,7 @@ namespace yawlib
         /// Enables mapping friendly .net names to WMI Class Names.
         /// </summary>
         /// <param name="WmiClassName">The WmiClassName to use when talking to wmi.</param>
+        [DebuggerNonUserCode()]
         public WmiClassNameAttribute(string WmiClassName)
         {
             this.WmiClassName = WmiClassName;

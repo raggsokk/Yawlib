@@ -10,14 +10,16 @@ namespace yawlib.Magic
     /// WMI uses string as placeholder for more complex types.
     /// Suct as GUID, DateTime(Old), etc
     /// </summary>
+    //TODO: Find a better name for this enum.
     internal enum MyTypeInfoEnum
-    {
-        //TODO: Find a better name for this enum.
-        Invalid,
+    {        
+        Invalid, // default when not set.
+
         // Actually a string.
         String,
 
         Guid,
         DateTime,
+        TimeSpan,
     }
 }

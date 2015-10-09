@@ -37,18 +37,10 @@ using System.Management;
 namespace yawlib.Win32
 {
     [WmiClassName("Win32_PhysicalMedia")]
-    public class PhysicalMedia //: WmiParsable // : IWmiParseable
+    public class PhysicalMedia
     {
         public string Tag { get; set; }
         public string SerialNumber { get; set; }
 
-        //IWmiParseable IWmiParseable.Parse(ManagementBaseObject mba)
-        //{
-        //    return new PhysicalMedia()
-        //    {
-        //        Tag = mba.GetPropertyValue(nameof(Tag)) as string,
-        //        SerialNumber = mba.GetPropertyValue(nameof(SerialNumber)) as string,
-        //    };
-        //}
     }
 }

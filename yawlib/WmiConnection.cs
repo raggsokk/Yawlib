@@ -330,10 +330,6 @@ namespace yawlib
                 return await tsc.Task;
             }
 
-            // await async task now so we can parse it.
-            //await tsc.Task;
-
-            //return list;
         }
 
         /// <summary>
@@ -349,14 +345,6 @@ namespace yawlib
 
             return Execute<T>(query, myType);
 
-            ////var t = default(T);
-            //var t = new T();
-
-            //throw new NotImplementedException();
-
-            //return Query<T>(query, (x) => 
-            //    { return (T)t.Parse(x); }
-            //);
         }
 
         /// <summary>
@@ -373,13 +361,6 @@ namespace yawlib
             var myType = Reflection.Instance.TryGetMyType(t.FullName, t);
 
             return await ExecuteAsync<T>(query, myType, cancellationToken);
-
-            //throw new NotImplementedException();
-
-            //return await QueryAsync<T>(query, (x) =>
-            //{
-            //    return (T)t.Parse(x);
-            //}, cancellationToken);
 
         }
 
@@ -415,11 +396,6 @@ namespace yawlib
 
             return Query<T>(query, Parse);
 
-            //return Execute<T>(query, myType);
-
-            //var query = CreateSelectAll(typeof(T));
-
-            //return Query<T>(query, Parse);
         }
 
         /// <summary>
@@ -436,10 +412,6 @@ namespace yawlib
             var query = new SelectQuery(myType.CreateSelectAll());
 
             return await QueryAsync<T>(query, Parse, cancellationToken);
-
-            //return await ExecuteAsync<T>(query, myType, cancellationToken)
-
-            //var query = CreateSelectAll(typeof(T));
 
 
         }
@@ -459,31 +431,6 @@ namespace yawlib
 
             return Execute<T>(query, myType);
 
-            //throw new NotImplementedException();
-
-            //var t = typeof(T);
-            //var myType = Reflection.Instance.TryGetMyType(t.FullName, t);
-
-            //var wql = myType.CreateSelectAll();
-            //var query = new SelectQuery(wql);
-
-            //var parser = myType.GenericParser;
-            //var i = new T();
-
-            //return Query<T>(query, (x) =>
-            //{
-            //    return (T)parser(i, x);
-            //});
-
-            //TODO: use type system here instead.
-            //var t = default(T);
-            //return Get<T>((x) => { return (T)t.Parse(x); });
-            //var query = CreateSelectAll(typeof(T));
-
-            //return Query<T>(query);
-
-            //var query = CreateSelectAll(typeof(T));           
-            //return Query<T>(query, });
         }
 
         /// <summary>
@@ -500,11 +447,6 @@ namespace yawlib
 
             return await ExecuteAsync<T>(query, myType, cancellationToken);
 
-            //throw new NotImplementedException();
-            //TODO: use type system here instead.
-            //var t = default(T);
-            //var t = new T();
-            //return await GetAsync<T>((x) => { return (T)t.Parse(x); });
         }
 
 
