@@ -35,6 +35,10 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\MediaDuplexStateEnum.cs" />
+    <Compile Include="Enums\NdisMediumEnum.cs" />
+    <Compile Include="Net\CommunicationStatus.cs" />
+    <Compile Include="Enums\EnabledDefaultEnum.cs" />
     <Compile Include="Net\Firewall\NetFirewallProfile.cs" />
     <Compile Include="Net\Firewall\NetFirewallRule.cs" />
     <Compile Include="Net\IP\NetIPAddress.cs" />

@@ -69,8 +69,8 @@ namespace Yawlib.Magic
 
                 foreach (var p in item.Properties)
                 {
-                    if (!p.IsLocal) // are there any info in this propname??
-                        continue; // no, then continue.
+                    //if (!p.IsLocal) // are there any info in this propname??
+                    //    continue; // no, then continue.
 
                     clsMyProperty myprop = null;
 
@@ -148,6 +148,12 @@ namespace Yawlib.Magic
 
             return null;
         }
+        private static object ConvertEnum(object wmiValue, clsMyProperty myProp)
+        {
+            //TODO: handle conversion errors.
+            return Enum.Parse(myProp.RefType, wmiValue.ToString());
+            //return null;
+        }
 
         /// <summary>
         /// Convert wmi datetime string into datetime.
@@ -191,17 +197,10 @@ namespace Yawlib.Magic
         internal static object ConvertObject(object wmivalue, clsMyProperty myProp) // MyTypeInfoEnum detailinfo, bool nullable = false)
         {
             //TODO: mayby change backup function prameters to before with not whole clsMyProperty??
-            switch(myProp.DetailInfo)
+            switch (myProp.DetailInfo)
             {
                 case MyTypeInfoEnum.Guid:
                     return ConvertGuid(wmivalue);
-                    //Guid g;
-                    //if (Guid.TryParse(wmivalue as string, out g))
-                    //    return g;
-                    //else if (nullable)
-                    //    return null;
-                    //else
-                    //    return Guid.Empty;
                 case MyTypeInfoEnum.DateTime:
                     return ConvertDateTime(wmivalue, myProp.CustomFormat);
                     //return ManagementDateTimeConverter.ToDateTime(wmivalue.ToString());
@@ -209,6 +208,8 @@ namespace Yawlib.Magic
                     return ManagementDateTimeConverter.ToTimeSpan(wmivalue.ToString());
                 case MyTypeInfoEnum.Version:
                     return ConvertVersion(wmivalue);
+                case MyTypeInfoEnum.Enum:
+                    return ConvertEnum(wmivalue, myProp);
                 default:
                     return wmivalue; // no conversion needed. hopefully.
             }

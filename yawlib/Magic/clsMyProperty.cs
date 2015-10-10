@@ -80,6 +80,8 @@ namespace Yawlib.Magic
         /// </summary>
         public bool IsArray { get; set; }
 
+        public bool IsEnum { get; set; }
+
         /// <summary>
         /// Base array. For nullable and array this is the underlying type. For list this is the generic type.
         /// </summary>
@@ -146,8 +148,17 @@ namespace Yawlib.Magic
                 }
                 else
                     typename = "INVALID";
-
             }
+
+            if (RefType.IsEnum)
+            {
+                this.IsEnum = true;
+                //if(this.IsList || this.IsArray)
+                //    typename = 
+                typename = "Enum"; //How handle enum arrays or lists???
+            }
+            
+
 
             this.CimType = CimType.None;
 
@@ -169,6 +180,9 @@ namespace Yawlib.Magic
                     break;
                 case "Version":
                     this.DetailInfo = MyTypeInfoEnum.Version;
+                    break;
+                case "Enum":
+                    this.DetailInfo = MyTypeInfoEnum.Enum;
                     break;
                 case "UInt16":
                     this.DetailInfo = MyTypeInfoEnum.UInt16;

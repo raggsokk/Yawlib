@@ -56,7 +56,8 @@ namespace Yawlib.StandardCimv2
         public string DriverProvider { get; set; }
         //Not sure this is a good idea.
         public Version DriverVersionString { get; set; }
-        public UInt16 EnabledDefault { get; set; }
+        //public UInt16 EnabledDefault { get; set; }
+        public EnabledDefaultEnum EnabledDefault { get; set; }
         public UInt16 EnabledState { get; set; }
         public bool EndPointInterface { get; set; }
         public bool HardwareInterface { get; set; }
@@ -74,11 +75,13 @@ namespace Yawlib.StandardCimv2
         public bool iSCSIInterface { get; set; }
         public UInt16 MajorDriverVersion { get; set; }
         public UInt32 MediaConnectedState { get; set; }
-        public UInt32 MediaDuplexState { get; set; }
+        //public UInt32 MediaDuplexState { get; set; }
+        public MediaDuplexStateEnum MediaDuplexState { get; set; }
         public UInt16 MinorDriverVersion { get; set; }
         public UInt32 MtuSize { get; set; }
         public string Name { get; set; }
-        public UInt32 NdisMedium { get; set; }
+        //public UInt32 NdisMedium { get; set; }
+        public NdisMediumEnum NdisMedium { get; set; }
         public UInt32 NdisPhysicalMedium { get; set; }
         public UInt64 NetLuid { get; set; }
         public UInt32 NetLuidIndex { get; set; }
