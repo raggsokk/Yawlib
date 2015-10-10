@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yawlib", "Yawlib\Yawlib.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yawlib.Win32", "Yawlib.Win32\Yawlib.Win32.csproj", "{B28BFAD6-2E50-4E73-8F50-7B7CEF5CD688}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yawlib.StandardCimv2", "Yawlib.StandardCimv2\Yawlib.StandardCimv2.csproj", "{B884AD8D-F620-4D59-B186-8EC1D6E1F610}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{B28BFAD6-2E50-4E73-8F50-7B7CEF5CD688}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B28BFAD6-2E50-4E73-8F50-7B7CEF5CD688}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B28BFAD6-2E50-4E73-8F50-7B7CEF5CD688}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B884AD8D-F620-4D59-B186-8EC1D6E1F610}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B884AD8D-F620-4D59-B186-8EC1D6E1F610}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B884AD8D-F620-4D59-B186-8EC1D6E1F610}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B884AD8D-F620-4D59-B186-8EC1D6E1F610}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

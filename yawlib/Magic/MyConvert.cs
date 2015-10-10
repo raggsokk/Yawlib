@@ -169,7 +169,7 @@ namespace Yawlib.Magic
             // if not custom format succeded, try fallback anyway.
             if(strDateTime != null)
             {
-                if (strDateTime.Length > 22 && (strDateTime[21] == '+' || strDateTime[21] == '-'))
+                if (strDateTime.Length > 22 && (strDateTime[21] == '+' || strDateTime[21] == '-' || strDateTime[21] == ':'))
                     return ManagementDateTimeConverter.ToDateTime(strDateTime);
                 else
                 {
