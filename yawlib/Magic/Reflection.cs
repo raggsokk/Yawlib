@@ -1,4 +1,14 @@
-﻿using System;
+﻿#region License
+
+/*
+    This code is based/copied from work by Mehdi Gholam in fastJson
+    http://www.codeproject.com/Articles/159450/fastJSON#litjson
+    https://fastjson.codeplex.com/
+*/
+
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
